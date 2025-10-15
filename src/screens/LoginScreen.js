@@ -1,5 +1,6 @@
 
-// import React, { useState } from 'react';
+
+// import React, { useState, useEffect } from 'react';
 // import { 
 //   View, 
 //   Text, 
@@ -7,75 +8,54 @@
 //   TouchableOpacity, 
 //   StyleSheet, 
 //   Alert, 
-//   Platform, 
-//   PermissionsAndroid 
+//   ActivityIndicator 
 // } from 'react-native';
 // import axios from 'axios';
-// import Geolocation from 'react-native-geolocation-service';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
+// import useCurrentLocation from '../hooks/useCurrentLocation'; // <-- path to your hook
 
 // export default function LoginScreen({ navigation }) {
 //   const [email, setEmail] = useState('');
 //   const [password, setPassword] = useState('');
+//   const [loading, setLoading] = useState(false);
 
-//   // Request location permission
-//   const requestLocationPermission = async () => {
-//     if (Platform.OS === 'android') {
-//       try {
-//         const granted = await PermissionsAndroid.request(
-//           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-//           {
-//             title: "Location Permission",
-//             message: "We need access to your location for Nearby Alerts",
-//             buttonNeutral: "Ask Me Later",
-//             buttonNegative: "Cancel",
-//             buttonPositive: "OK"
-//           }
-//         );
-//         return granted === PermissionsAndroid.RESULTS.GRANTED;
-//       } catch (err) {
-//         console.warn(err);
-//         return false;
-//       }
-//     }
-//     return true; // iOS handled in Info.plist
-//   };
+//   const location = useCurrentLocation(); // { latitude, longitude }
 
 //   const handleLogin = async () => {
-//     const hasPermission = await requestLocationPermission();
-//     if (!hasPermission) {
-//       Alert.alert("Permission denied", "Location permission is required to login.");
+//     if (!email || !password) {
+//       Alert.alert('Validation Error', 'Email and password are required.');
 //       return;
 //     }
 
-//     Geolocation.getCurrentPosition(
-//       async (position) => {
-//         const latitude = position.coords.latitude;
-//         const longitude = position.coords.longitude;
+//     if (!location.latitude || !location.longitude) {
+//       Alert.alert('Location Error', 'Unable to get your current location. Please try again.');
+//       return;
+//     }
 
-//         try {
-//           const response = await axios.post("http://172.20.10.3:8096/api/users/login", {
-//             email,
-//             password,
-//             latitude,
-//             longitude
-//           });
+//     setLoading(true);
 
-//           const token = response.data.token;
-//           console.log("JWT Token:", token);
-//           Alert.alert("Login Successful", `Welcome ${email}`);
+//     try {
+//       const response = await axios.post('http://172.20.10.3:8096/api/users/login', {
+//         email,
+//         password,
+//         latitude: location.latitude,
+//         longitude: location.longitude,
+//       });
 
-//           // TODO: save token in AsyncStorage for later API calls
-//         } catch (error) {
-//           console.log("Login error:", error.response?.data || error.message);
-//           Alert.alert("Login Failed", error.response?.data?.message || "Invalid credentials");
-//         }
-//       },
-//       (error) => {
-//         console.log("Geolocation error:", error);
-//         Alert.alert("Location Error", "Unable to get location. Please try again.");
-//       },
-//       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-//     );
+//       const token = response.data.token;
+//       await AsyncStorage.setItem('token', token);
+
+//       Alert.alert('Login Successful', `Welcome ${email}`);
+//       navigation.navigate('Home'); // or your main screen
+//     } catch (error) {
+//       console.log('Login error:', error.response?.data || error.message);
+//       Alert.alert(
+//         'Login Failed',
+//         error.response?.data?.message || 'Invalid credentials'
+//       );
+//     } finally {
+//       setLoading(false);
+//     }
 //   };
 
 //   return (
@@ -100,8 +80,12 @@
 //         style={styles.input}
 //       />
 
-//       <TouchableOpacity style={styles.button} onPress={handleLogin}>
-//         <Text style={styles.buttonText}>Login</Text>
+//       <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+//         {loading ? (
+//           <ActivityIndicator color="#fff" />
+//         ) : (
+//           <Text style={styles.buttonText}>Login</Text>
+//         )}
 //       </TouchableOpacity>
 
 //       <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
@@ -162,21 +146,16 @@
 //   }
 // });
 
-// ******
 
-import React, { useState, useEffect } from 'react';
+
+
+
+import React, { useState } from 'react';
 import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
-  Alert, 
-  ActivityIndicator 
+  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator 
 } from 'react-native';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import useCurrentLocation from '../hooks/useCurrentLocation'; // <-- path to your hook
+import useCurrentLocation from '../hooks/useCurrentLocation';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -207,10 +186,23 @@ export default function LoginScreen({ navigation }) {
       });
 
       const token = response.data.token;
-      await AsyncStorage.setItem('token', token);
+      const user = {
+        id: response.data.id,
+        fullName: response.data.fullName,
+        email: response.data.email,
+        role: response.data.role,
+        languagePreference: response.data.languagePreference,
+        reputationScore: response.data.reputationScore,
+        verified: response.data.verified,
+      };
 
-      Alert.alert('Login Successful', `Welcome ${email}`);
-      navigation.navigate('Home'); // or your main screen
+      if (!token || !user.id) {
+        Alert.alert('Error', 'User data missing in response');
+        return;
+      }
+
+      Alert.alert('Login Successful', `Welcome ${user.fullName}`);
+      navigation.navigate('Home', { user, token }); // ✅ Pass user and token
     } catch (error) {
       console.log('Login error:', error.response?.data || error.message);
       Alert.alert(
@@ -245,11 +237,7 @@ export default function LoginScreen({ navigation }) {
       />
 
       <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Login</Text>
-        )}
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Login</Text>}
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
@@ -260,53 +248,11 @@ export default function LoginScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    justifyContent: 'center', 
-    padding: 20, 
-    backgroundColor: '#f9f9f9' 
-  },
-  title: { 
-    fontSize: 28, 
-    fontWeight: 'bold', 
-    textAlign: 'center', 
-    marginBottom: 30, 
-    color: '#333' 
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-    color: '#444',
-    fontWeight: '500'
-  },
-  input: { 
-    width: '100%', 
-    height: 45, 
-    borderWidth: 1, 
-    borderColor: '#ccc', 
-    marginBottom: 15, 
-    paddingHorizontal: 10, 
-    borderRadius: 8, 
-    backgroundColor: '#fff' 
-  },
-  button: {
-    backgroundColor: '#4a90e2',
-    paddingVertical: 12,
-    borderRadius: 8,
-    marginTop: 10,
-    marginBottom: 15
-  },
-  buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontSize: 16,
-    fontWeight: 'bold'
-  },
-  link: {
-    color: '#4a90e2',
-    textAlign: 'center',
-    fontSize: 14,
-    marginTop: 5
-  }
+  container: { flex: 1, justifyContent: 'center', padding: 20, backgroundColor: '#f9f9f9' },
+  title: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginBottom: 30, color: '#333' },
+  label: { fontSize: 16, marginBottom: 5, color: '#444', fontWeight: '500' },
+  input: { width: '100%', height: 45, borderWidth: 1, borderColor: '#ccc', marginBottom: 15, paddingHorizontal: 10, borderRadius: 8, backgroundColor: '#fff' },
+  button: { backgroundColor: '#4a90e2', paddingVertical: 12, borderRadius: 8, marginTop: 10, marginBottom: 15 },
+  buttonText: { color: '#fff', textAlign: 'center', fontSize: 16, fontWeight: 'bold' },
+  link: { color: '#4a90e2', textAlign: 'center', fontSize: 14, marginTop: 5 }
 });
-
