@@ -1,47 +1,64 @@
 
 
-
 // import React from 'react';
-// import { View, Text, Button, Image, StyleSheet } from 'react-native';
+// import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 
 // export default function ItemDetailScreen({ route, navigation }) {
 //   const { item, user, token } = route.params;
+
+//   const handleClaim = () => {
+//     console.log('Claim button clicked'); // debug
+//     navigation.navigate('CreateClaim', { itemId: item.id, userId: user.id, token });
+//   };
 
 //   return (
 //     <View style={styles.container}>
 //       {item.emergency && <Text style={styles.emergency}>⚠️ Emergency</Text>}
 //       <Image 
-//         source={item.imageUrl ? { uri: `http://172.20.10.3:8096${item.imageUrl}` } : require('../assets/no-image.png')} 
+//         source={item.imageUrl ? { uri: item.imageUrl } : require('../assets/no-image.png')} 
 //         style={styles.image} 
 //       />
 //       <Text style={styles.title}>{item.title}</Text>
-//       <Text>Category: {item.category}</Text>
-//       <Text>Location: {item.location}</Text>
-//       <Text>Status: {item.status}</Text>
+//       <Text style={styles.text}>Category: {item.category}</Text>
+//       <Text style={styles.text}>Location: {item.location}</Text>
+//       <Text style={styles.text}>Status: {item.status}</Text>
 
-//       <Button
-//         title="Claim This Item"
-//         onPress={() => navigation.navigate('CreateClaim', { itemId: item.id, userId: user.id, token })}
-//       />
+//       <TouchableOpacity style={styles.button} onPress={handleClaim}>
+//         <Text style={styles.buttonText}>Claim This Item</Text>
+//       </TouchableOpacity>
 //     </View>
 //   );
 // }
 
 // const styles = StyleSheet.create({
-//   container: { flex: 1, padding: 20 },
-//   image: { width: '100%', height: 200, borderRadius: 8, marginBottom: 10 },
-//   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 5 },
-//   emergency: { color: 'red', fontWeight: 'bold', marginBottom: 5 },
+//   container: { flex: 1, padding: 20, backgroundColor: '#eaeded' },
+//   image: { width: '100%', height: 200, borderRadius: 12, marginBottom: 15 },
+//   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 10 },
+//   text: { fontSize: 16, marginBottom: 5, color: '#333' },
+//   emergency: { color: 'red', fontWeight: 'bold', marginBottom: 10, fontSize: 16 },
+//   button: {
+//     backgroundColor: '#4a90e2',
+//     paddingVertical: 14,
+//     borderRadius: 10,
+//     alignItems: 'center',
+//     marginTop: 20
+//   },
+//   buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 }
 // });
 
 
 
 
 import React from 'react';
-import { View, Text, Button, Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 
 export default function ItemDetailScreen({ route, navigation }) {
   const { item, user, token } = route.params;
+
+  const handleClaim = () => {
+    // Pass itemId, userId, and token via route params
+    navigation.navigate('CreateClaim', { itemId: item.id, userId: user.id, token });
+  };
 
   return (
     <View style={styles.container}>
@@ -51,21 +68,29 @@ export default function ItemDetailScreen({ route, navigation }) {
         style={styles.image} 
       />
       <Text style={styles.title}>{item.title}</Text>
-      <Text>Category: {item.category}</Text>
-      <Text>Location: {item.location}</Text>
-      <Text>Status: {item.status}</Text>
+      <Text style={styles.text}>Category: {item.category}</Text>
+      <Text style={styles.text}>Location: {item.location}</Text>
+      <Text style={styles.text}>Status: {item.status}</Text>
 
-      <Button
-        title="Claim This Item"
-        onPress={() => navigation.navigate('CreateClaim', { itemId: item.id, userId: user.id, token })}
-      />
+      <TouchableOpacity style={styles.button} onPress={handleClaim}>
+        <Text style={styles.buttonText}>Claim This Item</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  image: { width: '100%', height: 200, borderRadius: 8, marginBottom: 10 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 5 },
-  emergency: { color: 'red', fontWeight: 'bold', marginBottom: 5 },
+  container: { flex: 1, padding: 20, backgroundColor: '#eaeded' },
+  image: { width: '100%', height: 200, borderRadius: 12, marginBottom: 15 },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 10 },
+  text: { fontSize: 16, marginBottom: 5, color: '#333' },
+  emergency: { color: 'red', fontWeight: 'bold', marginBottom: 10, fontSize: 16 },
+  button: {
+    backgroundColor: '#4a90e2',
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20
+  },
+  buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 }
 });

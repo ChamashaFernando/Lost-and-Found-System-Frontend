@@ -7,6 +7,8 @@ import HomeScreen from '../screens/HomeScreen';
 import PostItemScreen from '../screens/PostItemScreen';
 import ItemDetailScreen from '../screens/ItemDetailScreen';
 import MyHistoryScreen from '../screens/MyHistoryScreen';
+import CreateClaimScreen from '../screens/CreateClaimScreen';
+import ClaimListScreen from '../screens/ClaimListScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,6 +22,8 @@ export default function AppNavigator() {
         <Stack.Screen name="PostItem" component={PostItemScreen} />
         <Stack.Screen name="ItemDetail" component={ItemDetailScreen} />
         <Stack.Screen name="MyHistory" component={MyHistoryScreen} />
+        <Stack.Screen name="CreateClaim" component={CreateClaimScreen} />
+        <Stack.Screen name="ClaimList" component={ClaimListScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
