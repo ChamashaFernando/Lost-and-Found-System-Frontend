@@ -11,6 +11,10 @@ import CreateClaimScreen from '../screens/CreateClaimScreen';
 import ClaimListScreen from '../screens/ClaimListScreen';
 import StudentHomeScreen from '../screens/StudentHomeScreen';
 import StudentItemDetails from '../screens/StudentItemDetails';
+import MyReportsScreen from '../screens/MyReportsScreen';
+import ReportFoundScreen from '../screens/ReportFoundScreen';
+
+
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +32,8 @@ export default function AppNavigator() {
         <Stack.Screen name="ClaimList" component={ClaimListScreen} />
         <Stack.Screen name="StudentHome" component={StudentHomeScreen} />
         <Stack.Screen name="StudentItemDetails" component={StudentItemDetails} />
+        <Stack.Screen name="MyReports" component={MyReportsScreen} />
+        <Stack.Screen name="ReportFound" component={ReportFoundScreen} />
 
       </Stack.Navigator>
     </NavigationContainer>

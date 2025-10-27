@@ -5,6 +5,7 @@
 // import { 
 //   View, Text, FlatList, TouchableOpacity, Image, TextInput, StyleSheet, Alert 
 // } from 'react-native';
+// import LinearGradient from 'react-native-linear-gradient'; // add this dependency
 // import axios from 'axios';
 
 // const categories = [
@@ -103,24 +104,33 @@
 //           onChangeText={setLocation} 
 //           style={styles.input} 
 //         />
-//         <TouchableOpacity style={styles.button} onPress={handleSearch}>
-//           <Text style={styles.buttonText}>Search</Text>
+//         <TouchableOpacity onPress={handleSearch}>
+//           <LinearGradient
+//             colors={['#4a90e2', '#3578c6']}
+//             style={styles.gradientButton}
+//           >
+//             <Text style={styles.buttonText}>Search</Text>
+//           </LinearGradient>
 //         </TouchableOpacity>
 //       </View>
 
 //       <View style={{ marginTop: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
-//         <TouchableOpacity style={styles.button} onPress={handlePostItem}>
-//           <Text style={styles.buttonText}>Post New Item</Text>
+//         <TouchableOpacity onPress={handlePostItem}>
+//           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
+//             <Text style={styles.buttonText}>Post New Item</Text>
+//           </LinearGradient>
 //         </TouchableOpacity>
-//         <TouchableOpacity style={styles.button} onPress={handleViewClaims}>
-//           <Text style={styles.buttonText}>View All Claims</Text>
+//         <TouchableOpacity onPress={handleViewClaims}>
+//           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
+//             <Text style={styles.buttonText}>View All Claims</Text>
+//           </LinearGradient>
 //         </TouchableOpacity>
 //       </View>
 //     </View>
 //   );
 
 //   return (
-//     <View style={{ flex: 1, padding: 10, backgroundColor: '#eaeded' }}>
+//     <View style={{ flex: 1, padding: 10, backgroundColor: '##ecf3fc' }}>
 //       <FlatList
 //         data={items}
 //         keyExtractor={item => item.id.toString()}
@@ -158,18 +168,22 @@
 //   searchContainer: { marginVertical: 10 },
 //   input: { 
 //     borderWidth: 1, 
-//     borderColor: '#4a90e2', 
+//     borderColor: '#dae8f9', 
 //     borderRadius: 8, 
 //     padding: 10, 
 //     marginBottom: 8,
 //     backgroundColor: '#fff'
 //   },
-//   button: { 
-//     backgroundColor: '#4a90e2', 
-//     padding: 12, 
+//   gradientButton: { 
+//     padding: 12,
 //     borderRadius: 8, 
-//     alignItems: 'center',
-//     marginBottom: 5
+//     alignItems: 'center', 
+//     marginBottom: 5,
+//     shadowColor: '#000',
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.2,
+//     shadowRadius: 4,
+//     elevation: 3
 //   },
 //   buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
 //   itemCard: { 
@@ -197,7 +211,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { 
   View, Text, FlatList, TouchableOpacity, Image, TextInput, StyleSheet, Alert 
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient'; // add this dependency
+import LinearGradient from 'react-native-linear-gradient';
 import axios from 'axios';
 
 const categories = [
@@ -266,6 +280,10 @@ export default function HomeScreen({ navigation, route }) {
     navigation.navigate('ClaimList', { user, token });
   };
 
+  const handleMyReports = () => {
+    navigation.navigate('MyReportsScreen', { userId: user.id, token });
+  };
+
   const renderHeader = () => (
     <View style={{ marginBottom: 20 }}>
       <Text style={styles.title}>Lost & Found Items</Text>
@@ -307,14 +325,21 @@ export default function HomeScreen({ navigation, route }) {
       </View>
 
       <View style={{ marginTop: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
-        <TouchableOpacity onPress={handlePostItem}>
+        <TouchableOpacity onPress={handlePostItem} style={{ flex: 1, marginRight: 5 }}>
           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
             <Text style={styles.buttonText}>Post New Item</Text>
           </LinearGradient>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleViewClaims}>
+
+        <TouchableOpacity onPress={handleViewClaims} style={{ flex: 1, marginRight: 5 }}>
           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
             <Text style={styles.buttonText}>View All Claims</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleMyReports} style={{ flex: 1 }}>
+          <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
+            <Text style={styles.buttonText}>My Reports</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
@@ -322,7 +347,7 @@ export default function HomeScreen({ navigation, route }) {
   );
 
   return (
-    <View style={{ flex: 1, padding: 10, backgroundColor: '##ecf3fc' }}>
+    <View style={{ flex: 1, padding: 10, backgroundColor: '#ecf3fc' }}>
       <FlatList
         data={items}
         keyExtractor={item => item.id.toString()}
