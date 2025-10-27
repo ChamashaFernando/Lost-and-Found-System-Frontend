@@ -1,7 +1,13 @@
+
+
 // import React, { useState, useEffect } from 'react';
 // import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 // import axios from 'axios';
-// import { BASE_URL } from '../config/api';
+
+// // ✅ Change BASE_URL according to your backend setup
+// // Example: Android Emulator -> "http://10.0.2.2:8096/api/claims"
+// // Physical device -> "http://<PC-IP>:8096/api/claims"
+// const CLAIM_API_URL = "http://172.20.10.3:8096/api/claims";
 
 // export default function CreateClaimScreen({ route, navigation }) {
 //   const { itemId, userId, token } = route.params || {};
@@ -9,13 +15,13 @@
 //   const [message, setMessage] = useState('');
 //   const [loading, setLoading] = useState(false);
 
-//   // ✅ Fixed useEffect dependencies warning
+//   // ✅ Ensure token is available, ESLint warning fixed
 //   useEffect(() => {
 //     if (!token) {
 //       Alert.alert('Session expired', 'Please login again.');
-//       navigation.replace('Login'); // replace prevents going back
+//       navigation.replace('Login');
 //     }
-//   }, [navigation, token]); // include navigation and token
+//   }, [navigation, token]);
 
 //   const handleSubmit = async () => {
 //     if (!message.trim()) {
@@ -23,17 +29,26 @@
 //       return;
 //     }
 
-//     const claimData = { message: message.trim(), status: 'PENDING', userId, itemId };
+//     const claimData = {
+//       message: message.trim(),
+//       status: 'PENDING',
+//       userId,
+//       itemId,
+//     };
+
+//     console.log('Claim data to submit:', claimData);
+//     console.log('Submitting claim to:', CLAIM_API_URL, 'with token:', token);
 
 //     try {
 //       setLoading(true);
-//       console.log('Submitting claim with token:', token); // debug
-//       const response = await axios.post(`${BASE_URL}/claims`, claimData, {
+//       const response = await axios.post(CLAIM_API_URL, claimData, {
 //         headers: {
 //           'Content-Type': 'application/json',
-//           Authorization: `Bearer ${token}`, // pass token
+//           Authorization: `Bearer ${token}`, // token pass
 //         },
 //       });
+
+//       console.log('Submit response:', response.data);
 
 //       Alert.alert('Success', 'Claim submitted!', [
 //         {
@@ -41,9 +56,14 @@
 //           onPress: () => navigation.navigate('ClaimList', { itemId, token }),
 //         },
 //       ]);
+
+//       setMessage(''); // clear input
 //     } catch (error) {
 //       console.log('Submit claim error:', error.response?.data || error.message);
-//       Alert.alert('Error', error.response?.data?.message || 'Failed to submit claim');
+//       Alert.alert(
+//         'Error',
+//         error.response?.data?.message || 'Failed to submit claim'
+//       );
 //     } finally {
 //       setLoading(false);
 //     }
@@ -91,9 +111,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 
-// ✅ Change BASE_URL according to your backend setup
-// Example: Android Emulator -> "http://10.0.2.2:8096/api/claims"
-// Physical device -> "http://<PC-IP>:8096/api/claims"
 const CLAIM_API_URL = "http://172.20.10.3:8096/api/claims";
 
 export default function CreateClaimScreen({ route, navigation }) {
@@ -102,7 +119,6 @@ export default function CreateClaimScreen({ route, navigation }) {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // ✅ Ensure token is available, ESLint warning fixed
   useEffect(() => {
     if (!token) {
       Alert.alert('Session expired', 'Please login again.');
@@ -131,20 +147,18 @@ export default function CreateClaimScreen({ route, navigation }) {
       const response = await axios.post(CLAIM_API_URL, claimData, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // token pass
+          Authorization: `Bearer ${token}`,
         },
       });
 
       console.log('Submit response:', response.data);
 
-      Alert.alert('Success', 'Claim submitted!', [
-        {
-          text: 'OK',
-          onPress: () => navigation.navigate('ClaimList', { itemId, token }),
-        },
-      ]);
-
+      Alert.alert('Success', 'Claim submitted!');
       setMessage(''); // clear input
+
+      // ✅ Previously: navigation.navigate('ClaimList', { itemId, token })
+      // Removed automatic navigation after claim submission
+
     } catch (error) {
       console.log('Submit claim error:', error.response?.data || error.message);
       Alert.alert(

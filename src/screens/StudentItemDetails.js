@@ -1,18 +1,11 @@
-
 // import React from 'react';
 // import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 
-// export default function ItemDetailScreen({ route, navigation }) {
+// export default function StudentItemDetails({ route, navigation }) {
 //   const { item, user, token } = route.params;
 
 //   const handleClaim = () => {
-//     // Navigate to CreateClaim screen with params
 //     navigation.navigate('CreateClaim', { itemId: item.id, userId: user.id, token });
-//   };
-
-//   const handleViewAllClaims = () => {
-//     // Navigate to ClaimList screen with user and token
-//     navigation.navigate('ClaimList', { user, token });
 //   };
 
 //   return (
@@ -33,11 +26,6 @@
 //       <TouchableOpacity style={styles.button} onPress={handleClaim}>
 //         <Text style={styles.buttonText}>Claim This Item</Text>
 //       </TouchableOpacity>
-
-//       {/* View All Claims Button */}
-//       <TouchableOpacity style={[styles.button, styles.viewButton]} onPress={handleViewAllClaims}>
-//         <Text style={styles.buttonText}>View All Claims</Text>
-//       </TouchableOpacity>
 //     </View>
 //   );
 // }
@@ -55,9 +43,6 @@
 //     alignItems: 'center',
 //     marginTop: 20
 //   },
-//   viewButton: {
-//     backgroundColor: '#3578c6', // darker shade for difference
-//   },
 //   buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 }
 // });
 
@@ -67,16 +52,11 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 
-export default function ItemDetailScreen({ route, navigation }) {
+export default function StudentItemDetails({ route, navigation }) {
   const { item, user, token } = route.params;
 
   const handleClaim = () => {
     navigation.navigate('CreateClaim', { itemId: item.id, userId: user.id, token });
-  };
-
-  const handleViewAllClaims = () => {
-    // ✅ Pass itemId and token to ClaimList
-    navigation.navigate('ClaimList', { itemId: item.id, token });
   };
 
   return (
@@ -96,10 +76,6 @@ export default function ItemDetailScreen({ route, navigation }) {
       <TouchableOpacity style={styles.button} onPress={handleClaim}>
         <Text style={styles.buttonText}>Claim This Item</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity style={[styles.button, styles.viewButton]} onPress={handleViewAllClaims}>
-        <Text style={styles.buttonText}>View All Claims</Text>
-      </TouchableOpacity>
     </View>
   );
 }
@@ -117,9 +93,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20
   },
-  viewButton: {
-    backgroundColor: '#3578c6', // darker shade
-  },
   buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 }
 });
-

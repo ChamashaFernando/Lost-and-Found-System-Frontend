@@ -1,18 +1,12 @@
 
 
-// import React, { useState, useEffect } from 'react';
+
+// import React, { useState } from 'react';
 // import { 
-//   View, 
-//   Text, 
-//   TextInput, 
-//   TouchableOpacity, 
-//   StyleSheet, 
-//   Alert, 
-//   ActivityIndicator 
+//   View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator 
 // } from 'react-native';
 // import axios from 'axios';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// import useCurrentLocation from '../hooks/useCurrentLocation'; // <-- path to your hook
+// import useCurrentLocation from '../hooks/useCurrentLocation';
 
 // export default function LoginScreen({ navigation }) {
 //   const [email, setEmail] = useState('');
@@ -43,10 +37,23 @@
 //       });
 
 //       const token = response.data.token;
-//       await AsyncStorage.setItem('token', token);
+//       const user = {
+//         id: response.data.id,
+//         fullName: response.data.fullName,
+//         email: response.data.email,
+//         role: response.data.role,
+//         languagePreference: response.data.languagePreference,
+//         reputationScore: response.data.reputationScore,
+//         verified: response.data.verified,
+//       };
 
-//       Alert.alert('Login Successful', `Welcome ${email}`);
-//       navigation.navigate('Home'); // or your main screen
+//       if (!token || !user.id) {
+//         Alert.alert('Error', 'User data missing in response');
+//         return;
+//       }
+
+//       Alert.alert('Login Successful', `Welcome ${user.fullName}`);
+//       navigation.navigate('Home', { user, token }); // ✅ Pass user and token
 //     } catch (error) {
 //       console.log('Login error:', error.response?.data || error.message);
 //       Alert.alert(
@@ -81,11 +88,7 @@
 //       />
 
 //       <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-//         {loading ? (
-//           <ActivityIndicator color="#fff" />
-//         ) : (
-//           <Text style={styles.buttonText}>Login</Text>
-//         )}
+//         {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Login</Text>}
 //       </TouchableOpacity>
 
 //       <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
@@ -96,63 +99,26 @@
 // }
 
 // const styles = StyleSheet.create({
-//   container: { 
-//     flex: 1, 
-//     justifyContent: 'center', 
-//     padding: 20, 
-//     backgroundColor: '#f9f9f9' 
-//   },
-//   title: { 
-//     fontSize: 28, 
-//     fontWeight: 'bold', 
-//     textAlign: 'center', 
-//     marginBottom: 30, 
-//     color: '#333' 
-//   },
-//   label: {
-//     fontSize: 16,
-//     marginBottom: 5,
-//     color: '#444',
-//     fontWeight: '500'
-//   },
-//   input: { 
-//     width: '100%', 
-//     height: 45, 
-//     borderWidth: 1, 
-//     borderColor: '#ccc', 
-//     marginBottom: 15, 
-//     paddingHorizontal: 10, 
-//     borderRadius: 8, 
-//     backgroundColor: '#fff' 
-//   },
-//   button: {
-//     backgroundColor: '#4a90e2',
-//     paddingVertical: 12,
-//     borderRadius: 8,
-//     marginTop: 10,
-//     marginBottom: 15
-//   },
-//   buttonText: {
-//     color: '#fff',
-//     textAlign: 'center',
-//     fontSize: 16,
-//     fontWeight: 'bold'
-//   },
-//   link: {
-//     color: '#4a90e2',
-//     textAlign: 'center',
-//     fontSize: 14,
-//     marginTop: 5
-//   }
+//   container: { flex: 1, justifyContent: 'center', padding: 20, backgroundColor: '#f9f9f9' },
+//   title: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginBottom: 30, color: '#333' },
+//   label: { fontSize: 16, marginBottom: 5, color: '#444', fontWeight: '500' },
+//   input: { width: '100%', height: 45, borderWidth: 1, borderColor: '#ccc', marginBottom: 15, paddingHorizontal: 10, borderRadius: 8, backgroundColor: '#fff' },
+//   button: { backgroundColor: '#4a90e2', paddingVertical: 12, borderRadius: 8, marginTop: 10, marginBottom: 15 },
+//   buttonText: { color: '#fff', textAlign: 'center', fontSize: 16, fontWeight: 'bold' },
+//   link: { color: '#4a90e2', textAlign: 'center', fontSize: 14, marginTop: 5 }
 // });
-
-
 
 
 
 import React, { useState } from 'react';
 import { 
-  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  StyleSheet, 
+  Alert, 
+  ActivityIndicator 
 } from 'react-native';
 import axios from 'axios';
 import useCurrentLocation from '../hooks/useCurrentLocation';
@@ -201,10 +167,21 @@ export default function LoginScreen({ navigation }) {
         return;
       }
 
-      Alert.alert('Login Successful', `Welcome ${user.fullName}`);
-      navigation.navigate('Home', { user, token }); // ✅ Pass user and token
+      console.log('✅ Login success:', user);
+
+      // ✅ Role-based navigation
+      if (user.role === 'ADMIN') {
+        Alert.alert('Login Successful', `Welcome Admin ${user.fullName}`);
+        navigation.replace('Home', { user, token });
+      } else if (user.role === 'STUDENT') {
+        Alert.alert('Login Successful', `Welcome ${user.fullName}`);
+        navigation.replace('StudentHome', { user, token });
+      } else {
+        Alert.alert('Access Denied', 'Your role is not authorized.');
+      }
+
     } catch (error) {
-      console.log('Login error:', error.response?.data || error.message);
+      console.log('❌ Login error:', error.response?.data || error.message);
       Alert.alert(
         'Login Failed',
         error.response?.data?.message || 'Invalid credentials'
@@ -236,8 +213,16 @@ export default function LoginScreen({ navigation }) {
         style={styles.input}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Login</Text>}
+      <TouchableOpacity 
+        style={styles.button} 
+        onPress={handleLogin} 
+        disabled={loading}
+      >
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Login</Text>
+        )}
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
@@ -248,11 +233,52 @@ export default function LoginScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 20, backgroundColor: '#f9f9f9' },
-  title: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginBottom: 30, color: '#333' },
-  label: { fontSize: 16, marginBottom: 5, color: '#444', fontWeight: '500' },
-  input: { width: '100%', height: 45, borderWidth: 1, borderColor: '#ccc', marginBottom: 15, paddingHorizontal: 10, borderRadius: 8, backgroundColor: '#fff' },
-  button: { backgroundColor: '#4a90e2', paddingVertical: 12, borderRadius: 8, marginTop: 10, marginBottom: 15 },
-  buttonText: { color: '#fff', textAlign: 'center', fontSize: 16, fontWeight: 'bold' },
-  link: { color: '#4a90e2', textAlign: 'center', fontSize: 14, marginTop: 5 }
+  container: { 
+    flex: 1, 
+    justifyContent: 'center', 
+    padding: 20, 
+    backgroundColor: '#f9f9f9' 
+  },
+  title: { 
+    fontSize: 28, 
+    fontWeight: 'bold', 
+    textAlign: 'center', 
+    marginBottom: 30, 
+    color: '#333' 
+  },
+  label: { 
+    fontSize: 16, 
+    marginBottom: 5, 
+    color: '#444', 
+    fontWeight: '500' 
+  },
+  input: { 
+    width: '100%', 
+    height: 45, 
+    borderWidth: 1, 
+    borderColor: '#ccc', 
+    marginBottom: 15, 
+    paddingHorizontal: 10, 
+    borderRadius: 8, 
+    backgroundColor: '#fff' 
+  },
+  button: { 
+    backgroundColor: '#4a90e2', 
+    paddingVertical: 12, 
+    borderRadius: 8, 
+    marginTop: 10, 
+    marginBottom: 15 
+  },
+  buttonText: { 
+    color: '#fff', 
+    textAlign: 'center', 
+    fontSize: 16, 
+    fontWeight: 'bold' 
+  },
+  link: { 
+    color: '#4a90e2', 
+    textAlign: 'center', 
+    fontSize: 14, 
+    marginTop: 5 
+  },
 });
