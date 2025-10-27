@@ -1,14 +1,9 @@
+
+
+
 // import React, { useEffect, useState, useCallback } from 'react';
 // import { 
-//   View, 
-//   Text, 
-//   FlatList, 
-//   TouchableOpacity, 
-//   Image, 
-//   TextInput, 
-//   Button, 
-//   StyleSheet, 
-//   Alert 
+//   View, Text, FlatList, TouchableOpacity, Image, TextInput, StyleSheet, Alert 
 // } from 'react-native';
 // import axios from 'axios';
 
@@ -31,7 +26,6 @@
 //   const [category, setCategory] = useState('');
 //   const [location, setLocation] = useState('');
 
-//   // 🔹 Fetch all items (useCallback to prevent re-creation)
 //   const fetchAllItems = useCallback(async () => {
 //     try {
 //       const response = await axios.get('http://172.20.10.3:8096/api/items', {
@@ -51,7 +45,7 @@
 //       return;
 //     }
 //     fetchAllItems();
-//   }, [fetchAllItems, navigation, token]); // ✅ ESLint fix
+//   }, [fetchAllItems, navigation, token]);
 
 //   const handleSearch = async () => {
 //     try {
@@ -71,11 +65,18 @@
 //     handleSearch();
 //   };
 
-//   return (
-//     <View style={{ flex: 1, padding: 10 }}>
+//   const handlePostItem = () => {
+//     navigation.navigate('PostItem', { user, token });
+//   };
+
+//   const handleViewClaims = () => {
+//     navigation.navigate('ClaimList', { user, token });
+//   };
+
+//   const renderHeader = () => (
+//     <View style={{ marginBottom: 20 }}>
 //       <Text style={styles.title}>Lost & Found Items</Text>
 
-//       {/* Category Horizontal List */}
 //       <FlatList
 //         data={categories}
 //         horizontal
@@ -89,22 +90,37 @@
 //         showsHorizontalScrollIndicator={false}
 //       />
 
-//       {/* Search */}
-//       <TextInput 
-//         placeholder="Category" 
-//         value={category} 
-//         onChangeText={setCategory} 
-//         style={styles.input} 
-//       />
-//       <TextInput 
-//         placeholder="Location" 
-//         value={location} 
-//         onChangeText={setLocation} 
-//         style={styles.input} 
-//       />
-//       <Button title="Search" onPress={handleSearch} />
+//       <View style={styles.searchContainer}>
+//         <TextInput 
+//           placeholder="Category" 
+//           value={category} 
+//           onChangeText={setCategory} 
+//           style={styles.input} 
+//         />
+//         <TextInput 
+//           placeholder="Location" 
+//           value={location} 
+//           onChangeText={setLocation} 
+//           style={styles.input} 
+//         />
+//         <TouchableOpacity style={styles.button} onPress={handleSearch}>
+//           <Text style={styles.buttonText}>Search</Text>
+//         </TouchableOpacity>
+//       </View>
 
-//       {/* Items List */}
+//       <View style={{ marginTop: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
+//         <TouchableOpacity style={styles.button} onPress={handlePostItem}>
+//           <Text style={styles.buttonText}>Post New Item</Text>
+//         </TouchableOpacity>
+//         <TouchableOpacity style={styles.button} onPress={handleViewClaims}>
+//           <Text style={styles.buttonText}>View All Claims</Text>
+//         </TouchableOpacity>
+//       </View>
+//     </View>
+//   );
+
+//   return (
+//     <View style={{ flex: 1, padding: 10, backgroundColor: '#eaeded' }}>
 //       <FlatList
 //         data={items}
 //         keyExtractor={item => item.id.toString()}
@@ -114,49 +130,74 @@
 //             style={styles.itemCard}
 //           >
 //             {item.emergency && <Text style={styles.emergency}>⚠️ Emergency</Text>}
-//             <Image 
-//               source={item.imageUrl ? { uri: `http://172.20.10.3:8096${item.imageUrl}` } : require('../assets/no-image.png')} 
-//               style={styles.itemImage} 
-//             />
-//             <Text style={styles.itemTitle}>{item.title}</Text>
-//             <Text>Category: {item.category}</Text>
-//             <Text>Location: {item.location}</Text>
-//             <Text>Status: {item.status}</Text>
+//             <View style={styles.itemRow}>
+//               <Image 
+//                 source={item.imageUrl ? { uri: item.imageUrl } : require('../assets/no-image.png')} 
+//                 style={styles.itemImage} 
+//               />
+//               <View style={styles.itemDetails}>
+//                 <Text style={styles.itemTitle}>{item.title}</Text>
+//                 <Text style={styles.itemText}>Category: {item.category}</Text>
+//                 <Text style={styles.itemText}>Location: {item.location}</Text>
+//                 <Text style={styles.itemText}>Status: {item.status}</Text>
+//               </View>
+//             </View>
 //           </TouchableOpacity>
 //         )}
-//         style={{ marginTop: 10 }}
+//         ListHeaderComponent={renderHeader}
 //       />
 //     </View>
 //   );
 // }
 
 // const styles = StyleSheet.create({
-//   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 10, color: '#222' },
+//   title: { fontSize: 26, fontWeight: 'bold', marginBottom: 15, color: '#222' },
 //   category: { alignItems: 'center', marginRight: 15 },
 //   categoryImage: { width: 60, height: 60, borderRadius: 30, marginBottom: 5 },
-//   categoryText: { fontSize: 12 },
-//   input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 5, padding: 8, marginBottom: 5 },
-//   itemCard: { borderWidth: 1, borderColor: '#ddd', padding: 10, borderRadius: 8, marginBottom: 10 },
-//   itemImage: { width: '100%', height: 150, borderRadius: 8, marginBottom: 5 },
-//   itemTitle: { fontSize: 18, fontWeight: 'bold' },
-//   emergency: { color: 'red', fontWeight: 'bold', marginBottom: 5 },
+//   categoryText: { fontSize: 12, fontWeight: '600' },
+//   searchContainer: { marginVertical: 10 },
+//   input: { 
+//     borderWidth: 1, 
+//     borderColor: '#4a90e2', 
+//     borderRadius: 8, 
+//     padding: 10, 
+//     marginBottom: 8,
+//     backgroundColor: '#fff'
+//   },
+//   button: { 
+//     backgroundColor: '#4a90e2', 
+//     padding: 12, 
+//     borderRadius: 8, 
+//     alignItems: 'center',
+//     marginBottom: 5
+//   },
+//   buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+//   itemCard: { 
+//     backgroundColor: '#fff',
+//     borderRadius: 12,
+//     padding: 10, 
+//     marginBottom: 12,
+//     shadowColor: '#000',
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.1,
+//     shadowRadius: 4,
+//     elevation: 3
+//   },
+//   itemRow: { flexDirection: 'row', alignItems: 'center' },
+//   itemImage: { width: 110, height: 110, borderRadius: 12, marginRight: 12 },
+//   itemDetails: { flex: 1 },
+//   itemTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 5 },
+//   itemText: { fontSize: 14, color: '#555', marginBottom: 2 },
+//   emergency: { color: 'red', fontWeight: 'bold', marginBottom: 5, fontSize: 16 },
 // });
-
 
 
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { 
-  View, 
-  Text, 
-  FlatList, 
-  TouchableOpacity, 
-  Image, 
-  TextInput, 
-  Button, 
-  StyleSheet, 
-  Alert 
+  View, Text, FlatList, TouchableOpacity, Image, TextInput, StyleSheet, Alert 
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient'; // add this dependency
 import axios from 'axios';
 
 const categories = [
@@ -225,7 +266,6 @@ export default function HomeScreen({ navigation, route }) {
     navigation.navigate('ClaimList', { user, token });
   };
 
-  // FlatList Header
   const renderHeader = () => (
     <View style={{ marginBottom: 20 }}>
       <Text style={styles.title}>Lost & Found Items</Text>
@@ -243,31 +283,46 @@ export default function HomeScreen({ navigation, route }) {
         showsHorizontalScrollIndicator={false}
       />
 
-      <TextInput 
-        placeholder="Category" 
-        value={category} 
-        onChangeText={setCategory} 
-        style={styles.input} 
-      />
-      <TextInput 
-        placeholder="Location" 
-        value={location} 
-        onChangeText={setLocation} 
-        style={styles.input} 
-      />
-      <Button title="Search" onPress={handleSearch} />
+      <View style={styles.searchContainer}>
+        <TextInput 
+          placeholder="Category" 
+          value={category} 
+          onChangeText={setCategory} 
+          style={styles.input} 
+        />
+        <TextInput 
+          placeholder="Location" 
+          value={location} 
+          onChangeText={setLocation} 
+          style={styles.input} 
+        />
+        <TouchableOpacity onPress={handleSearch}>
+          <LinearGradient
+            colors={['#4a90e2', '#3578c6']}
+            style={styles.gradientButton}
+          >
+            <Text style={styles.buttonText}>Search</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
 
-      {/* Buttons under Search */}
-      <View style={{ marginTop: 15 }}>
-        <Button title="Post New Item" onPress={handlePostItem} />
-        <View style={{ height: 10 }} />
-        <Button title="View All Claims" onPress={handleViewClaims} />
+      <View style={{ marginTop: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
+        <TouchableOpacity onPress={handlePostItem}>
+          <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
+            <Text style={styles.buttonText}>Post New Item</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleViewClaims}>
+          <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
+            <Text style={styles.buttonText}>View All Claims</Text>
+          </LinearGradient>
+        </TouchableOpacity>
       </View>
     </View>
   );
 
   return (
-    <View style={{ flex: 1, padding: 10 }}>
+    <View style={{ flex: 1, padding: 10, backgroundColor: '##ecf3fc' }}>
       <FlatList
         data={items}
         keyExtractor={item => item.id.toString()}
@@ -277,14 +332,18 @@ export default function HomeScreen({ navigation, route }) {
             style={styles.itemCard}
           >
             {item.emergency && <Text style={styles.emergency}>⚠️ Emergency</Text>}
-            <Image 
-              source={item.imageUrl ? { uri: `http://172.20.10.3:8096${item.imageUrl}` } : require('../assets/no-image.png')} 
-              style={styles.itemImage} 
-            />
-            <Text style={styles.itemTitle}>{item.title}</Text>
-            <Text>Category: {item.category}</Text>
-            <Text>Location: {item.location}</Text>
-            <Text>Status: {item.status}</Text>
+            <View style={styles.itemRow}>
+              <Image 
+                source={item.imageUrl ? { uri: item.imageUrl } : require('../assets/no-image.png')} 
+                style={styles.itemImage} 
+              />
+              <View style={styles.itemDetails}>
+                <Text style={styles.itemTitle}>{item.title}</Text>
+                <Text style={styles.itemText}>Category: {item.category}</Text>
+                <Text style={styles.itemText}>Location: {item.location}</Text>
+                <Text style={styles.itemText}>Status: {item.status}</Text>
+              </View>
+            </View>
           </TouchableOpacity>
         )}
         ListHeaderComponent={renderHeader}
@@ -294,13 +353,46 @@ export default function HomeScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 10, color: '#222' },
+  title: { fontSize: 26, fontWeight: 'bold', marginBottom: 15, color: '#222' },
   category: { alignItems: 'center', marginRight: 15 },
   categoryImage: { width: 60, height: 60, borderRadius: 30, marginBottom: 5 },
-  categoryText: { fontSize: 12 },
-  input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 5, padding: 8, marginBottom: 5 },
-  itemCard: { borderWidth: 1, borderColor: '#ddd', padding: 10, borderRadius: 8, marginBottom: 10 },
-  itemImage: { width: '100%', height: 150, borderRadius: 8, marginBottom: 5 },
-  itemTitle: { fontSize: 18, fontWeight: 'bold' },
-  emergency: { color: 'red', fontWeight: 'bold', marginBottom: 5 },
+  categoryText: { fontSize: 12, fontWeight: '600' },
+  searchContainer: { marginVertical: 10 },
+  input: { 
+    borderWidth: 1, 
+    borderColor: '#dae8f9', 
+    borderRadius: 8, 
+    padding: 10, 
+    marginBottom: 8,
+    backgroundColor: '#fff'
+  },
+  gradientButton: { 
+    padding: 12,
+    borderRadius: 8, 
+    alignItems: 'center', 
+    marginBottom: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3
+  },
+  buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  itemCard: { 
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 10, 
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3
+  },
+  itemRow: { flexDirection: 'row', alignItems: 'center' },
+  itemImage: { width: 110, height: 110, borderRadius: 12, marginRight: 12 },
+  itemDetails: { flex: 1 },
+  itemTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 5 },
+  itemText: { fontSize: 14, color: '#555', marginBottom: 2 },
+  emergency: { color: 'red', fontWeight: 'bold', marginBottom: 5, fontSize: 16 },
 });
