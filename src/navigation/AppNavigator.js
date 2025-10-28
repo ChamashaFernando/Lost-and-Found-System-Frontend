@@ -13,6 +13,7 @@ import StudentHomeScreen from '../screens/StudentHomeScreen';
 import StudentItemDetails from '../screens/StudentItemDetails';
 import MyReportsScreen from '../screens/MyReportsScreen';
 import ReportFoundScreen from '../screens/ReportFoundScreen';
+import ChatScreen from '../screens/ChatScreen';
 
 
 
@@ -34,8 +35,10 @@ export default function AppNavigator() {
         <Stack.Screen name="StudentItemDetails" component={StudentItemDetails} />
         <Stack.Screen name="MyReports" component={MyReportsScreen} />
         <Stack.Screen name="ReportFound" component={ReportFoundScreen} />
+        <Stack.Screen name="Chat" component={ChatScreen} />
 
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
+
