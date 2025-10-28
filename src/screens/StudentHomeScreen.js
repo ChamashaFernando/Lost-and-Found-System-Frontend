@@ -2,9 +2,6 @@
 
 
 
-
-
-
 // import React, { useEffect, useState, useCallback } from 'react';
 // import { 
 //   View, Text, FlatList, TouchableOpacity, Image, TextInput, StyleSheet, Alert 
@@ -31,13 +28,13 @@
 //   const [category, setCategory] = useState('');
 //   const [location, setLocation] = useState('');
 
+//   // 🔹 Fetch all items
 //   const fetchAllItems = useCallback(async () => {
 //     try {
 //       const response = await axios.get('http://172.20.10.3:8096/api/items', {
 //         headers: { Authorization: `Bearer ${token}` },
 //       });
 
-//       // Sort emergency items to appear first
 //       const sortedItems = response.data.sort((a, b) => {
 //         if (a.emergency && !b.emergency) return -1;
 //         if (!a.emergency && b.emergency) return 1;
@@ -60,6 +57,7 @@
 //     fetchAllItems();
 //   }, [fetchAllItems, navigation, token]);
 
+//   // 🔹 Search items by category/location
 //   const handleSearch = async () => {
 //     try {
 //       const response = await axios.get('http://172.20.10.3:8096/api/items/search', {
@@ -85,14 +83,30 @@
 //     handleSearch();
 //   };
 
-//   const handlePostItem = () => {
-//     navigation.navigate('PostItem', { user, token });
+//   // 🔹 Navigation buttons
+//   const handlePostItem = () => navigation.navigate('PostItem', { user, token });
+//   const handleReportFound = () => navigation.navigate('ReportFound', { userId: user.id, token });
+
+//   // 🔹 Chat button
+//   const handleChat = async () => {
+//     if (!user || !token) return Alert.alert("Error", "User/token missing");
+
+//     try {
+//       const response = await axios.post(
+//         'http://172.20.10.3:8096/api/chat/session',
+//         { user1Id: user.id, user2Id: 1 }, // Admin user id = 1
+//         { headers: { Authorization: `Bearer ${token}` } }
+//       );
+
+//       const session = response.data;
+//       navigation.navigate('Chat', { session, user, token });
+//     } catch (err) {
+//       console.error("Create chat session error:", err.response?.data || err.message);
+//       Alert.alert("Error", "Chat session create කරන්න බැහැ.");
+//     }
 //   };
 
-//   const handleReportFound = () => {
-//     navigation.navigate('ReportFound', { userId: user.id, token });
-//   };
-
+//   // 🔹 Header with categories, search & buttons
 //   const renderHeader = () => (
 //     <View style={{ marginBottom: 20 }}>
 //       <Text style={styles.title}>Lost & Found Items</Text>
@@ -140,6 +154,12 @@
 //         <TouchableOpacity onPress={handleReportFound} style={{ marginTop: 10 }}>
 //           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
 //             <Text style={styles.buttonText}>Report Found</Text>
+//           </LinearGradient>
+//         </TouchableOpacity>
+
+//         <TouchableOpacity onPress={handleChat} style={{ marginTop: 10 }}>
+//           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
+//             <Text style={styles.buttonText}>Chat</Text>
 //           </LinearGradient>
 //         </TouchableOpacity>
 //       </View>
@@ -231,6 +251,7 @@
 //   itemTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 5 },
 //   itemText: { fontSize: 14, color: '#555', marginBottom: 2 },
 // });
+
 
 
 
@@ -344,6 +365,9 @@ export default function StudentHomeScreen({ navigation, route }) {
     }
   };
 
+  // 🔹 My Posted Items button
+  const handleMyPostedItems = () => navigation.navigate('MyPostedItems', { user, token });
+
   // 🔹 Header with categories, search & buttons
   const renderHeader = () => (
     <View style={{ marginBottom: 20 }}>
@@ -398,6 +422,12 @@ export default function StudentHomeScreen({ navigation, route }) {
         <TouchableOpacity onPress={handleChat} style={{ marginTop: 10 }}>
           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
             <Text style={styles.buttonText}>Chat</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleMyPostedItems} style={{ marginTop: 10 }}>
+          <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
+            <Text style={styles.buttonText}>My Posted Items</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
