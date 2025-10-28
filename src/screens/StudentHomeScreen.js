@@ -1,6 +1,8 @@
 
 
 
+
+
 // import React, { useEffect, useState, useCallback } from 'react';
 // import { 
 //   View, Text, FlatList, TouchableOpacity, Image, TextInput, StyleSheet, Alert 
@@ -9,13 +11,13 @@
 // import axios from 'axios';
 
 // const categories = [
-//   { id: "1", name: "Wallets", image: require("../assets/wallet.png") },
-//   { id: "2", name: "Watches", image: require("../assets/watch.png") },
-//   { id: "3", name: "Caps", image: require("../assets/cap.png") },
-//   { id: "4", name: "Umbrellas", image: require("../assets/umbrella.png") },
-//   { id: "5", name: "Bags", image: require("../assets/bag.png") },
-//   { id: "6", name: "Phones", image: require("../assets/phone.png") },
-//   { id: "7", name: "Bottles", image: require("../assets/bottle.png") },
+//   { id: "1", name: "Wallet", image: require("../assets/wallet.png") },
+//   { id: "2", name: "Watch", image: require("../assets/watch.png") },
+//   { id: "3", name: "Cap", image: require("../assets/cap.png") },
+//   { id: "4", name: "Umbrella", image: require("../assets/umbrella.png") },
+//   { id: "5", name: "Bag", image: require("../assets/bag.png") },
+//   { id: "6", name: "Phone", image: require("../assets/phone.png") },
+//   { id: "7", name: "Bottle", image: require("../assets/bottle.png") },
 //   { id: "8", name: "Others", image: require("../assets/others.png") },
 // ];
 
@@ -106,7 +108,11 @@
 //   };
 
 //   // 🔹 My Posted Items button
-//   const handleMyPostedItems = () => navigation.navigate('MyPostedItems', { user, token });
+//   const handleMyPostedItems = () => navigation.navigate('MyPostedItems', { 
+//     user, 
+//     token, 
+//     onDelete: fetchAllItems // 🔹 pass callback for refresh
+//   });
 
 //   // 🔹 Header with categories, search & buttons
 //   const renderHeader = () => (
@@ -266,6 +272,7 @@
 
 
 
+
 import React, { useEffect, useState, useCallback } from 'react';
 import { 
   View, Text, FlatList, TouchableOpacity, Image, TextInput, StyleSheet, Alert 
@@ -292,7 +299,6 @@ export default function StudentHomeScreen({ navigation, route }) {
   const [category, setCategory] = useState('');
   const [location, setLocation] = useState('');
 
-  // 🔹 Fetch all items
   const fetchAllItems = useCallback(async () => {
     try {
       const response = await axios.get('http://172.20.10.3:8096/api/items', {
@@ -321,7 +327,6 @@ export default function StudentHomeScreen({ navigation, route }) {
     fetchAllItems();
   }, [fetchAllItems, navigation, token]);
 
-  // 🔹 Search items by category/location
   const handleSearch = async () => {
     try {
       const response = await axios.get('http://172.20.10.3:8096/api/items/search', {
@@ -347,18 +352,16 @@ export default function StudentHomeScreen({ navigation, route }) {
     handleSearch();
   };
 
-  // 🔹 Navigation buttons
   const handlePostItem = () => navigation.navigate('PostItem', { user, token });
   const handleReportFound = () => navigation.navigate('ReportFound', { userId: user.id, token });
 
-  // 🔹 Chat button
   const handleChat = async () => {
     if (!user || !token) return Alert.alert("Error", "User/token missing");
 
     try {
       const response = await axios.post(
         'http://172.20.10.3:8096/api/chat/session',
-        { user1Id: user.id, user2Id: 1 }, // Admin user id = 1
+        { user1Id: user.id, user2Id: 1 }, // Admin id = 1
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -370,14 +373,17 @@ export default function StudentHomeScreen({ navigation, route }) {
     }
   };
 
-  // 🔹 My Posted Items button
   const handleMyPostedItems = () => navigation.navigate('MyPostedItems', { 
     user, 
     token, 
-    onDelete: fetchAllItems // 🔹 pass callback for refresh
+    onDelete: fetchAllItems
   });
 
-  // 🔹 Header with categories, search & buttons
+  // 🔹 New: Navigate to My Profile
+  const handleMyProfile = () => {
+    navigation.navigate('MyProfile', { user, token });
+  };
+
   const renderHeader = () => (
     <View style={{ marginBottom: 20 }}>
       <Text style={styles.title}>Lost & Found Items</Text>
@@ -437,6 +443,13 @@ export default function StudentHomeScreen({ navigation, route }) {
         <TouchableOpacity onPress={handleMyPostedItems} style={{ marginTop: 10 }}>
           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
             <Text style={styles.buttonText}>My Posted Items</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        {/* 🔹 My Profile Button */}
+        <TouchableOpacity onPress={handleMyProfile} style={{ marginTop: 10 }}>
+          <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
+            <Text style={styles.buttonText}>My Profile</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>

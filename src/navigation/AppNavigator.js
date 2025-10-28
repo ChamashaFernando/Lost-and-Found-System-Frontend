@@ -15,6 +15,7 @@ import MyReportsScreen from '../screens/MyReportsScreen';
 import ReportFoundScreen from '../screens/ReportFoundScreen';
 import ChatScreen from '../screens/ChatScreen';
 import MyPostedItemsScreen from '../screens/MyPostedItemsScreen';
+import MyProfileScreen from '../screens/MyProfileScreen';
 
 
 
@@ -38,6 +39,7 @@ export default function AppNavigator() {
         <Stack.Screen name="ReportFound" component={ReportFoundScreen} />
         <Stack.Screen name="Chat" component={ChatScreen} />
         <Stack.Screen name="MyPostedItems" component={MyPostedItemsScreen} /> 
+        <Stack.Screen name="MyProfile" component={MyProfileScreen} />
 
       </Stack.Navigator>
     </NavigationContainer>
