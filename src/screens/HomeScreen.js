@@ -164,7 +164,7 @@ export default function HomeScreen({ navigation, route }) {
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity
-            onPress={() => navigation.navigate('StudentItemDetails', { item, user, token })}
+            onPress={() => navigation.navigate('ItemDetail', { item, user, token })}
             style={[styles.itemCard, item.emergency && styles.emergencyCard]}
           >
             {item.emergency && <Text style={styles.emergencyLabel}>⚠️ Emergency </Text>}
@@ -241,3 +241,9 @@ const styles = StyleSheet.create({
   itemTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 5 },
   itemText: { fontSize: 14, color: '#555', marginBottom: 2 },
 });
+
+
+
+
+
+
