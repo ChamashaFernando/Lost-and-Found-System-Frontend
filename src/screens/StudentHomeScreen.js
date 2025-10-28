@@ -1,7 +1,6 @@
 
 
 
-
 // import React, { useEffect, useState, useCallback } from 'react';
 // import { 
 //   View, Text, FlatList, TouchableOpacity, Image, TextInput, StyleSheet, Alert 
@@ -106,6 +105,9 @@
 //     }
 //   };
 
+//   // 🔹 My Posted Items button
+//   const handleMyPostedItems = () => navigation.navigate('MyPostedItems', { user, token });
+
 //   // 🔹 Header with categories, search & buttons
 //   const renderHeader = () => (
 //     <View style={{ marginBottom: 20 }}>
@@ -160,6 +162,12 @@
 //         <TouchableOpacity onPress={handleChat} style={{ marginTop: 10 }}>
 //           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
 //             <Text style={styles.buttonText}>Chat</Text>
+//           </LinearGradient>
+//         </TouchableOpacity>
+
+//         <TouchableOpacity onPress={handleMyPostedItems} style={{ marginTop: 10 }}>
+//           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
+//             <Text style={styles.buttonText}>My Posted Items</Text>
 //           </LinearGradient>
 //         </TouchableOpacity>
 //       </View>
@@ -258,9 +266,6 @@
 
 
 
-
-
-
 import React, { useEffect, useState, useCallback } from 'react';
 import { 
   View, Text, FlatList, TouchableOpacity, Image, TextInput, StyleSheet, Alert 
@@ -269,13 +274,13 @@ import LinearGradient from 'react-native-linear-gradient';
 import axios from 'axios';
 
 const categories = [
-  { id: "1", name: "Wallets", image: require("../assets/wallet.png") },
-  { id: "2", name: "Watches", image: require("../assets/watch.png") },
-  { id: "3", name: "Caps", image: require("../assets/cap.png") },
-  { id: "4", name: "Umbrellas", image: require("../assets/umbrella.png") },
-  { id: "5", name: "Bags", image: require("../assets/bag.png") },
-  { id: "6", name: "Phones", image: require("../assets/phone.png") },
-  { id: "7", name: "Bottles", image: require("../assets/bottle.png") },
+  { id: "1", name: "Wallet", image: require("../assets/wallet.png") },
+  { id: "2", name: "Watch", image: require("../assets/watch.png") },
+  { id: "3", name: "Cap", image: require("../assets/cap.png") },
+  { id: "4", name: "Umbrella", image: require("../assets/umbrella.png") },
+  { id: "5", name: "Bag", image: require("../assets/bag.png") },
+  { id: "6", name: "Phone", image: require("../assets/phone.png") },
+  { id: "7", name: "Bottle", image: require("../assets/bottle.png") },
   { id: "8", name: "Others", image: require("../assets/others.png") },
 ];
 
@@ -366,7 +371,11 @@ export default function StudentHomeScreen({ navigation, route }) {
   };
 
   // 🔹 My Posted Items button
-  const handleMyPostedItems = () => navigation.navigate('MyPostedItems', { user, token });
+  const handleMyPostedItems = () => navigation.navigate('MyPostedItems', { 
+    user, 
+    token, 
+    onDelete: fetchAllItems // 🔹 pass callback for refresh
+  });
 
   // 🔹 Header with categories, search & buttons
   const renderHeader = () => (
