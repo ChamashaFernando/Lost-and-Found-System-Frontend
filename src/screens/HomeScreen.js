@@ -207,6 +207,12 @@
 
 
 
+
+
+
+
+
+
 import React, { useEffect, useState, useCallback } from 'react';
 import { 
   View, Text, FlatList, TouchableOpacity, Image, TextInput, StyleSheet, Alert 
@@ -238,7 +244,15 @@ export default function HomeScreen({ navigation, route }) {
       const response = await axios.get('http://172.20.10.3:8096/api/items', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setItems(response.data);
+
+      // Sort emergency items first
+      const sortedItems = response.data.sort((a, b) => {
+        if (a.emergency && !b.emergency) return -1;
+        if (!a.emergency && b.emergency) return 1;
+        return 0;
+      });
+
+      setItems(sortedItems);
     } catch (err) {
       console.error('Fetch items error:', err);
       Alert.alert("Error", "Failed to load items.");
@@ -260,7 +274,14 @@ export default function HomeScreen({ navigation, route }) {
         params: { category, location, emergency: false },
         headers: { Authorization: `Bearer ${token}` },
       });
-      setItems(response.data);
+
+      const sortedSearchResults = response.data.sort((a, b) => {
+        if (a.emergency && !b.emergency) return -1;
+        if (!a.emergency && b.emergency) return 1;
+        return 0;
+      });
+
+      setItems(sortedSearchResults);
     } catch (err) {
       console.error('Search error:', err);
       Alert.alert("Error", "Search failed.");
@@ -276,12 +297,12 @@ export default function HomeScreen({ navigation, route }) {
     navigation.navigate('PostItem', { user, token });
   };
 
-  const handleViewClaims = () => {
-    navigation.navigate('ClaimList', { user, token });
+  const handleMyReports = () => {
+    navigation.navigate('MyReports', { userId: user.id, token });
   };
 
-  const handleMyReports = () => {
-    navigation.navigate('MyReportsScreen', { userId: user.id, token });
+  const handleReportFound = () => {
+    navigation.navigate('ReportFound', { userId: user.id, token });
   };
 
   const renderHeader = () => (
@@ -315,31 +336,28 @@ export default function HomeScreen({ navigation, route }) {
           style={styles.input} 
         />
         <TouchableOpacity onPress={handleSearch}>
-          <LinearGradient
-            colors={['#4a90e2', '#3578c6']}
-            style={styles.gradientButton}
-          >
+          <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
             <Text style={styles.buttonText}>Search</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
 
-      <View style={{ marginTop: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
-        <TouchableOpacity onPress={handlePostItem} style={{ flex: 1, marginRight: 5 }}>
+      <View style={{ marginTop: 15 }}>
+        <TouchableOpacity onPress={handlePostItem} style={{ marginBottom: 10 }}>
           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
             <Text style={styles.buttonText}>Post New Item</Text>
           </LinearGradient>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleViewClaims} style={{ flex: 1, marginRight: 5 }}>
+        <TouchableOpacity onPress={handleMyReports} style={{ marginBottom: 10 }}>
           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
-            <Text style={styles.buttonText}>View All Claims</Text>
+            <Text style={styles.buttonText}>My Reports</Text>
           </LinearGradient>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleMyReports} style={{ flex: 1 }}>
+        <TouchableOpacity onPress={handleReportFound}>
           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
-            <Text style={styles.buttonText}>My Reports</Text>
+            <Text style={styles.buttonText}>Report Found</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
@@ -347,16 +365,16 @@ export default function HomeScreen({ navigation, route }) {
   );
 
   return (
-    <View style={{ flex: 1, padding: 10, backgroundColor: '#ecf3fc' }}>
+    <View style={{ flex: 1, padding: 10, backgroundColor: '#f5f9ff' }}>
       <FlatList
         data={items}
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity
-            onPress={() => navigation.navigate('ItemDetail', { item, user, token })}
-            style={styles.itemCard}
+            onPress={() => navigation.navigate('StudentItemDetails', { item, user, token })}
+            style={[styles.itemCard, item.emergency && styles.emergencyCard]}
           >
-            {item.emergency && <Text style={styles.emergency}>⚠️ Emergency</Text>}
+            {item.emergency && <Text style={styles.emergencyLabel}>⚠️ Emergency </Text>}
             <View style={styles.itemRow}>
               <Image 
                 source={item.imageUrl ? { uri: item.imageUrl } : require('../assets/no-image.png')} 
@@ -378,7 +396,7 @@ export default function HomeScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  title: { fontSize: 26, fontWeight: 'bold', marginBottom: 15, color: '#222' },
+  title: { fontSize: 26, fontWeight: 'bold', marginBottom: 15, color: '#1b3358' },
   category: { alignItems: 'center', marginRight: 15 },
   categoryImage: { width: 60, height: 60, borderRadius: 30, marginBottom: 5 },
   categoryText: { fontSize: 12, fontWeight: '600' },
@@ -393,9 +411,8 @@ const styles = StyleSheet.create({
   },
   gradientButton: { 
     padding: 12,
-    borderRadius: 8, 
+    borderRadius: 10, 
     alignItems: 'center', 
-    marginBottom: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
@@ -405,7 +422,7 @@ const styles = StyleSheet.create({
   buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
   itemCard: { 
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderRadius: 14,
     padding: 10, 
     marginBottom: 12,
     shadowColor: '#000',
@@ -414,10 +431,20 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3
   },
+  emergencyCard: {
+    borderLeftWidth: 6,
+    borderLeftColor: '#e53935',
+    backgroundColor: '#ffe6e6'
+  },
+  emergencyLabel: {
+    color: '#d32f2f',
+    fontWeight: 'bold',
+    marginBottom: 5,
+    fontSize: 15
+  },
   itemRow: { flexDirection: 'row', alignItems: 'center' },
   itemImage: { width: 110, height: 110, borderRadius: 12, marginRight: 12 },
   itemDetails: { flex: 1 },
   itemTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 5 },
   itemText: { fontSize: 14, color: '#555', marginBottom: 2 },
-  emergency: { color: 'red', fontWeight: 'bold', marginBottom: 5, fontSize: 16 },
 });
