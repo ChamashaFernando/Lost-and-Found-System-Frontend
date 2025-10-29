@@ -1,8 +1,5 @@
 
 
-
-
-
 // import React, { useEffect, useState, useCallback } from 'react';
 // import { 
 //   View, Text, FlatList, TouchableOpacity, Image, TextInput, StyleSheet, Alert 
@@ -29,7 +26,6 @@
 //   const [category, setCategory] = useState('');
 //   const [location, setLocation] = useState('');
 
-//   // 🔹 Fetch all items
 //   const fetchAllItems = useCallback(async () => {
 //     try {
 //       const response = await axios.get('http://172.20.10.3:8096/api/items', {
@@ -58,7 +54,6 @@
 //     fetchAllItems();
 //   }, [fetchAllItems, navigation, token]);
 
-//   // 🔹 Search items by category/location
 //   const handleSearch = async () => {
 //     try {
 //       const response = await axios.get('http://172.20.10.3:8096/api/items/search', {
@@ -84,18 +79,16 @@
 //     handleSearch();
 //   };
 
-//   // 🔹 Navigation buttons
 //   const handlePostItem = () => navigation.navigate('PostItem', { user, token });
 //   const handleReportFound = () => navigation.navigate('ReportFound', { userId: user.id, token });
 
-//   // 🔹 Chat button
 //   const handleChat = async () => {
 //     if (!user || !token) return Alert.alert("Error", "User/token missing");
 
 //     try {
 //       const response = await axios.post(
 //         'http://172.20.10.3:8096/api/chat/session',
-//         { user1Id: user.id, user2Id: 1 }, // Admin user id = 1
+//         { user1Id: user.id, user2Id: 1 }, // Admin id = 1
 //         { headers: { Authorization: `Bearer ${token}` } }
 //       );
 
@@ -107,14 +100,17 @@
 //     }
 //   };
 
-//   // 🔹 My Posted Items button
 //   const handleMyPostedItems = () => navigation.navigate('MyPostedItems', { 
 //     user, 
 //     token, 
-//     onDelete: fetchAllItems // 🔹 pass callback for refresh
+//     onDelete: fetchAllItems
 //   });
 
-//   // 🔹 Header with categories, search & buttons
+//   // 🔹 New: Navigate to My Profile
+//   const handleMyProfile = () => {
+//     navigation.navigate('MyProfile', { user, token });
+//   };
+
 //   const renderHeader = () => (
 //     <View style={{ marginBottom: 20 }}>
 //       <Text style={styles.title}>Lost & Found Items</Text>
@@ -174,6 +170,13 @@
 //         <TouchableOpacity onPress={handleMyPostedItems} style={{ marginTop: 10 }}>
 //           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
 //             <Text style={styles.buttonText}>My Posted Items</Text>
+//           </LinearGradient>
+//         </TouchableOpacity>
+
+//         {/* 🔹 My Profile Button */}
+//         <TouchableOpacity onPress={handleMyProfile} style={{ marginTop: 10 }}>
+//           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
+//             <Text style={styles.buttonText}>My Profile</Text>
 //           </LinearGradient>
 //         </TouchableOpacity>
 //       </View>
@@ -265,7 +268,6 @@
 //   itemTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 5 },
 //   itemText: { fontSize: 14, color: '#555', marginBottom: 2 },
 // });
-
 
 
 
@@ -379,10 +381,10 @@ export default function StudentHomeScreen({ navigation, route }) {
     onDelete: fetchAllItems
   });
 
-  // 🔹 New: Navigate to My Profile
-  const handleMyProfile = () => {
-    navigation.navigate('MyProfile', { user, token });
-  };
+  const handleMyProfile = () => navigation.navigate('MyProfile', { user, token });
+
+  // 🔔 NEW: Handle Notifications button
+  const handleNotifications = () => navigation.navigate('Notifications', { user, token });
 
   const renderHeader = () => (
     <View style={{ marginBottom: 20 }}>
@@ -446,10 +448,16 @@ export default function StudentHomeScreen({ navigation, route }) {
           </LinearGradient>
         </TouchableOpacity>
 
-        {/* 🔹 My Profile Button */}
         <TouchableOpacity onPress={handleMyProfile} style={{ marginTop: 10 }}>
           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
             <Text style={styles.buttonText}>My Profile</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        {/* 🔹 Notifications Button */}
+        <TouchableOpacity onPress={handleNotifications} style={{ marginTop: 10 }}>
+          <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
+            <Text style={styles.buttonText}>Notifications</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
