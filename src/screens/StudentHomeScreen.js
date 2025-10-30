@@ -1,11 +1,10 @@
-
-
 // import React, { useEffect, useState, useCallback } from 'react';
 // import { 
-//   View, Text, FlatList, TouchableOpacity, Image, TextInput, StyleSheet, Alert 
+//   View, Text, FlatList, TouchableOpacity, Image, StyleSheet, Alert, Animated, Dimensions, TextInput 
 // } from 'react-native';
 // import LinearGradient from 'react-native-linear-gradient';
 // import axios from 'axios';
+// import Ionicons from 'react-native-vector-icons/Ionicons';
 
 // const categories = [
 //   { id: "1", name: "Wallet", image: require("../assets/wallet.png") },
@@ -18,13 +17,16 @@
 //   { id: "8", name: "Others", image: require("../assets/others.png") },
 // ];
 
+// const SCREEN_WIDTH = Dimensions.get('window').width;
+
 // export default function StudentHomeScreen({ navigation, route }) {
 //   const user = route.params?.user;
 //   const token = route.params?.token;
 
 //   const [items, setItems] = useState([]);
 //   const [category, setCategory] = useState('');
-//   const [location, setLocation] = useState('');
+//   const [menuOpen, setMenuOpen] = useState(false);
+//   const slideAnim = useState(new Animated.Value(-SCREEN_WIDTH * 0.6))[0]; // hidden initially
 
 //   const fetchAllItems = useCallback(async () => {
 //     try {
@@ -54,10 +56,30 @@
 //     fetchAllItems();
 //   }, [fetchAllItems, navigation, token]);
 
+//   const toggleMenu = () => {
+//     Animated.timing(slideAnim, {
+//       toValue: menuOpen ? -SCREEN_WIDTH * 0.6 : 0,
+//       duration: 300,
+//       useNativeDriver: false
+//     }).start();
+//     setMenuOpen(!menuOpen);
+//   };
+
+//   const handleNavigation = (screen, params = {}) => {
+//     toggleMenu();
+//     navigation.navigate(screen, { user, token, ...params });
+//   };
+
+//   const handleCategoryPress = (catName) => {
+//     setCategory(catName);
+//     const filtered = items.filter(i => i.category === catName);
+//     setItems(filtered);
+//   };
+
 //   const handleSearch = async () => {
 //     try {
 //       const response = await axios.get('http://172.20.10.3:8096/api/items/search', {
-//         params: { category, location, emergency: false },
+//         params: { category, emergency: false },
 //         headers: { Authorization: `Bearer ${token}` },
 //       });
 
@@ -74,47 +96,9 @@
 //     }
 //   };
 
-//   const handleCategoryPress = (catName) => {
-//     setCategory(catName);
-//     handleSearch();
-//   };
-
-//   const handlePostItem = () => navigation.navigate('PostItem', { user, token });
-//   const handleReportFound = () => navigation.navigate('ReportFound', { userId: user.id, token });
-
-//   const handleChat = async () => {
-//     if (!user || !token) return Alert.alert("Error", "User/token missing");
-
-//     try {
-//       const response = await axios.post(
-//         'http://172.20.10.3:8096/api/chat/session',
-//         { user1Id: user.id, user2Id: 1 }, // Admin id = 1
-//         { headers: { Authorization: `Bearer ${token}` } }
-//       );
-
-//       const session = response.data;
-//       navigation.navigate('Chat', { session, user, token });
-//     } catch (err) {
-//       console.error("Create chat session error:", err.response?.data || err.message);
-//       Alert.alert("Error", "Chat session create කරන්න බැහැ.");
-//     }
-//   };
-
-//   const handleMyPostedItems = () => navigation.navigate('MyPostedItems', { 
-//     user, 
-//     token, 
-//     onDelete: fetchAllItems
-//   });
-
-//   // 🔹 New: Navigate to My Profile
-//   const handleMyProfile = () => {
-//     navigation.navigate('MyProfile', { user, token });
-//   };
-
 //   const renderHeader = () => (
-//     <View style={{ marginBottom: 20 }}>
-//       <Text style={styles.title}>Lost & Found Items</Text>
-
+//     <View>
+//       {/* Categories horizontal list */}
 //       <FlatList
 //         data={categories}
 //         horizontal
@@ -126,20 +110,16 @@
 //           </TouchableOpacity>
 //         )}
 //         showsHorizontalScrollIndicator={false}
+//         contentContainerStyle={{ paddingHorizontal: 10, paddingVertical: 10 }}
 //       />
 
-//       <View style={styles.searchContainer}>
-//         <TextInput 
-//           placeholder="Category" 
-//           value={category} 
-//           onChangeText={setCategory} 
-//           style={styles.input} 
-//         />
-//         <TextInput 
-//           placeholder="Location" 
-//           value={location} 
-//           onChangeText={setLocation} 
-//           style={styles.input} 
+//       {/* Search Input - only category */}
+//       <View style={{ paddingHorizontal: 10, marginBottom: 10 }}>
+//         <TextInput
+//           placeholder="Category"
+//           value={category}
+//           onChangeText={setCategory}
+//           style={styles.input}
 //         />
 //         <TouchableOpacity onPress={handleSearch}>
 //           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
@@ -147,44 +127,21 @@
 //           </LinearGradient>
 //         </TouchableOpacity>
 //       </View>
-
-//       <View style={{ marginTop: 15 }}>
-//         <TouchableOpacity onPress={handlePostItem}>
-//           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
-//             <Text style={styles.buttonText}>Post New Item</Text>
-//           </LinearGradient>
-//         </TouchableOpacity>
-
-//         <TouchableOpacity onPress={handleReportFound} style={{ marginTop: 10 }}>
-//           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
-//             <Text style={styles.buttonText}>Report Found</Text>
-//           </LinearGradient>
-//         </TouchableOpacity>
-
-//         <TouchableOpacity onPress={handleChat} style={{ marginTop: 10 }}>
-//           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
-//             <Text style={styles.buttonText}>Chat</Text>
-//           </LinearGradient>
-//         </TouchableOpacity>
-
-//         <TouchableOpacity onPress={handleMyPostedItems} style={{ marginTop: 10 }}>
-//           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
-//             <Text style={styles.buttonText}>My Posted Items</Text>
-//           </LinearGradient>
-//         </TouchableOpacity>
-
-//         {/* 🔹 My Profile Button */}
-//         <TouchableOpacity onPress={handleMyProfile} style={{ marginTop: 10 }}>
-//           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
-//             <Text style={styles.buttonText}>My Profile</Text>
-//           </LinearGradient>
-//         </TouchableOpacity>
-//       </View>
 //     </View>
 //   );
 
 //   return (
-//     <View style={{ flex: 1, padding: 10, backgroundColor: '#f5f9ff' }}>
+//     <View style={{ flex: 1, backgroundColor: '#f5f9ff' }}>
+      
+//       {/* Top bar with menu icon */}
+//       <View style={styles.topBar}>
+//         <TouchableOpacity onPress={toggleMenu} style={styles.menuButton}>
+//           <Ionicons name={menuOpen ? "close" : "menu"} size={28} color="#fff" />
+//         </TouchableOpacity>
+//         <Text style={styles.topTitle}>Lost & Found Items</Text>
+//       </View>
+
+//       {/* Items list */}
 //       <FlatList
 //         data={items}
 //         keyExtractor={item => item.id.toString()}
@@ -210,23 +167,55 @@
 //         )}
 //         ListHeaderComponent={renderHeader}
 //       />
+
+//       {/* Side menu */}
+//       <Animated.View style={[styles.sideMenu, { left: slideAnim }]}>
+//         <TouchableOpacity style={styles.sideMenuItem} onPress={() => handleNavigation('PostItem')}>
+//           <Ionicons name="add-circle-outline" size={22} color="#3578c6" />
+//           <Text style={styles.sideMenuText}>Post New Item</Text>
+//         </TouchableOpacity>
+//         <TouchableOpacity style={styles.sideMenuItem} onPress={() => handleNavigation('ReportFound')}>
+//           <Ionicons name="checkmark-circle-outline" size={22} color="#3578c6" />
+//           <Text style={styles.sideMenuText}>Report Found</Text>
+//         </TouchableOpacity>
+//         <TouchableOpacity style={styles.sideMenuItem} onPress={() => handleNavigation('Chat')}>
+//           <Ionicons name="chatbubble-ellipses-outline" size={22} color="#3578c6" />
+//           <Text style={styles.sideMenuText}>Chat</Text>
+//         </TouchableOpacity>
+//         <TouchableOpacity style={styles.sideMenuItem} onPress={() => handleNavigation('MyPostedItems')}>
+//           <Ionicons name="document-text-outline" size={22} color="#3578c6" />
+//           <Text style={styles.sideMenuText}>My Posted Items</Text>
+//         </TouchableOpacity>
+//         <TouchableOpacity style={styles.sideMenuItem} onPress={() => handleNavigation('MyProfile')}>
+//           <Ionicons name="person-outline" size={22} color="#3578c6" />
+//           <Text style={styles.sideMenuText}>My Profile</Text>
+//         </TouchableOpacity>
+//         <TouchableOpacity style={styles.sideMenuItem} onPress={() => handleNavigation('Notifications')}>
+//           <Ionicons name="notifications-outline" size={22} color="#3578c6" />
+//           <Text style={styles.sideMenuText}>Notifications</Text>
+//         </TouchableOpacity>
+//       </Animated.View>
+
 //     </View>
 //   );
 // }
 
 // const styles = StyleSheet.create({
-//   title: { fontSize: 26, fontWeight: 'bold', marginBottom: 15, color: '#1b3358' },
+//   topBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#3578c6', paddingVertical: 12, paddingHorizontal: 15 },
+//   menuButton: { marginRight: 15 },
+//   topTitle: { fontSize: 20, color: '#fff', fontWeight: 'bold' },
+
 //   category: { alignItems: 'center', marginRight: 15 },
 //   categoryImage: { width: 60, height: 60, borderRadius: 30, marginBottom: 5 },
 //   categoryText: { fontSize: 12, fontWeight: '600' },
-//   searchContainer: { marginVertical: 10 },
+
 //   input: { 
 //     borderWidth: 1, 
 //     borderColor: '#dae8f9', 
 //     borderRadius: 8, 
 //     padding: 10, 
-//     marginBottom: 8,
-//     backgroundColor: '#fff'
+//     backgroundColor: '#fff',
+//     marginBottom: 8
 //   },
 //   gradientButton: { 
 //     padding: 12,
@@ -240,6 +229,7 @@
 //     elevation: 3
 //   },
 //   buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+
 //   itemCard: { 
 //     backgroundColor: '#fff',
 //     borderRadius: 14,
@@ -256,18 +246,33 @@
 //     borderLeftColor: '#e53935',
 //     backgroundColor: '#ffe6e6'
 //   },
-//   emergencyLabel: {
-//     color: '#d32f2f',
-//     fontWeight: 'bold',
-//     marginBottom: 5,
-//     fontSize: 15
-//   },
+//   emergencyLabel: { color: '#d32f2f', fontWeight: 'bold', marginBottom: 5, fontSize: 15 },
 //   itemRow: { flexDirection: 'row', alignItems: 'center' },
 //   itemImage: { width: 110, height: 110, borderRadius: 12, marginRight: 12 },
 //   itemDetails: { flex: 1 },
 //   itemTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 5 },
 //   itemText: { fontSize: 14, color: '#555', marginBottom: 2 },
+
+//   sideMenu: {
+//     position: 'absolute',
+//     top: 0,
+//     bottom: 0,
+//     width: SCREEN_WIDTH * 0.6,
+//     backgroundColor: '#fff',
+//     paddingTop: 60,
+//     paddingHorizontal: 10,
+//     shadowColor: '#000',
+//     shadowOffset: { width: 3, height: 0 },
+//     shadowOpacity: 0.2,
+//     shadowRadius: 4,
+//     elevation: 6,
+//     zIndex: 10,
+//   },
+//   sideMenuItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12 },
+//   sideMenuText: { fontSize: 16, fontWeight: '600', marginLeft: 10, color: '#3578c6' },
 // });
+
+
 
 
 
@@ -277,10 +282,11 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { 
-  View, Text, FlatList, TouchableOpacity, Image, TextInput, StyleSheet, Alert 
+  View, Text, FlatList, TouchableOpacity, Image, StyleSheet, Alert, Animated, Dimensions, TextInput 
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import axios from 'axios';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const categories = [
   { id: "1", name: "Wallet", image: require("../assets/wallet.png") },
@@ -293,13 +299,16 @@ const categories = [
   { id: "8", name: "Others", image: require("../assets/others.png") },
 ];
 
+const SCREEN_WIDTH = Dimensions.get('window').width;
+
 export default function StudentHomeScreen({ navigation, route }) {
   const user = route.params?.user;
   const token = route.params?.token;
 
   const [items, setItems] = useState([]);
   const [category, setCategory] = useState('');
-  const [location, setLocation] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const slideAnim = useState(new Animated.Value(-SCREEN_WIDTH * 0.6))[0];
 
   const fetchAllItems = useCallback(async () => {
     try {
@@ -329,10 +338,30 @@ export default function StudentHomeScreen({ navigation, route }) {
     fetchAllItems();
   }, [fetchAllItems, navigation, token]);
 
+  const toggleMenu = () => {
+    Animated.timing(slideAnim, {
+      toValue: menuOpen ? -SCREEN_WIDTH * 0.6 : 0,
+      duration: 300,
+      useNativeDriver: false
+    }).start();
+    setMenuOpen(!menuOpen);
+  };
+
+  const handleNavigation = (screen, params = {}) => {
+    toggleMenu();
+    navigation.navigate(screen, { user, token, ...params });
+  };
+
+  const handleCategoryPress = (catName) => {
+    setCategory(catName);
+    const filtered = items.filter(i => i.category === catName);
+    setItems(filtered);
+  };
+
   const handleSearch = async () => {
     try {
       const response = await axios.get('http://172.20.10.3:8096/api/items/search', {
-        params: { category, location, emergency: false },
+        params: { category, emergency: false },
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -349,47 +378,8 @@ export default function StudentHomeScreen({ navigation, route }) {
     }
   };
 
-  const handleCategoryPress = (catName) => {
-    setCategory(catName);
-    handleSearch();
-  };
-
-  const handlePostItem = () => navigation.navigate('PostItem', { user, token });
-  const handleReportFound = () => navigation.navigate('ReportFound', { userId: user.id, token });
-
-  const handleChat = async () => {
-    if (!user || !token) return Alert.alert("Error", "User/token missing");
-
-    try {
-      const response = await axios.post(
-        'http://172.20.10.3:8096/api/chat/session',
-        { user1Id: user.id, user2Id: 1 }, // Admin id = 1
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      const session = response.data;
-      navigation.navigate('Chat', { session, user, token });
-    } catch (err) {
-      console.error("Create chat session error:", err.response?.data || err.message);
-      Alert.alert("Error", "Chat session create කරන්න බැහැ.");
-    }
-  };
-
-  const handleMyPostedItems = () => navigation.navigate('MyPostedItems', { 
-    user, 
-    token, 
-    onDelete: fetchAllItems
-  });
-
-  const handleMyProfile = () => navigation.navigate('MyProfile', { user, token });
-
-  // 🔔 NEW: Handle Notifications button
-  const handleNotifications = () => navigation.navigate('Notifications', { user, token });
-
   const renderHeader = () => (
-    <View style={{ marginBottom: 20 }}>
-      <Text style={styles.title}>Lost & Found Items</Text>
-
+    <View>
       <FlatList
         data={categories}
         horizontal
@@ -401,20 +391,14 @@ export default function StudentHomeScreen({ navigation, route }) {
           </TouchableOpacity>
         )}
         showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 10, paddingVertical: 10 }}
       />
-
-      <View style={styles.searchContainer}>
-        <TextInput 
-          placeholder="Category" 
-          value={category} 
-          onChangeText={setCategory} 
-          style={styles.input} 
-        />
-        <TextInput 
-          placeholder="Location" 
-          value={location} 
-          onChangeText={setLocation} 
-          style={styles.input} 
+      <View style={{ paddingHorizontal: 10, marginBottom: 10 }}>
+        <TextInput
+          placeholder="Category"
+          value={category}
+          onChangeText={setCategory}
+          style={styles.input}
         />
         <TouchableOpacity onPress={handleSearch}>
           <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
@@ -422,50 +406,26 @@ export default function StudentHomeScreen({ navigation, route }) {
           </LinearGradient>
         </TouchableOpacity>
       </View>
-
-      <View style={{ marginTop: 15 }}>
-        <TouchableOpacity onPress={handlePostItem}>
-          <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
-            <Text style={styles.buttonText}>Post New Item</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={handleReportFound} style={{ marginTop: 10 }}>
-          <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
-            <Text style={styles.buttonText}>Report Found</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={handleChat} style={{ marginTop: 10 }}>
-          <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
-            <Text style={styles.buttonText}>Chat</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={handleMyPostedItems} style={{ marginTop: 10 }}>
-          <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
-            <Text style={styles.buttonText}>My Posted Items</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={handleMyProfile} style={{ marginTop: 10 }}>
-          <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
-            <Text style={styles.buttonText}>My Profile</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-
-        {/* 🔹 Notifications Button */}
-        <TouchableOpacity onPress={handleNotifications} style={{ marginTop: 10 }}>
-          <LinearGradient colors={['#4a90e2', '#3578c6']} style={styles.gradientButton}>
-            <Text style={styles.buttonText}>Notifications</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 
   return (
-    <View style={{ flex: 1, padding: 10, backgroundColor: '#f5f9ff' }}>
+    <View style={{ flex: 1, backgroundColor: '#f5f9ff' }}>
+
+      {/* Top bar */}
+      <View style={styles.topBar}>
+        <Text style={styles.topTitle}>Lost & Found Items</Text>
+      </View>
+
+      {/* Arrow / Menu Button on top of everything */}
+      <TouchableOpacity 
+        onPress={toggleMenu} 
+        style={[styles.menuButton, { zIndex: 20, position: 'absolute', left: 15, top: 12 }]}
+      >
+        <Ionicons name={menuOpen ? "arrow-back-outline" : "menu"} size={28} color="#fff" />
+      </TouchableOpacity>
+
+      {/* Items list */}
       <FlatList
         data={items}
         keyExtractor={item => item.id.toString()}
@@ -491,23 +451,54 @@ export default function StudentHomeScreen({ navigation, route }) {
         )}
         ListHeaderComponent={renderHeader}
       />
+
+      {/* Side menu */}
+      <Animated.View style={[styles.sideMenu, { left: slideAnim, zIndex: 10 }]}>
+        <TouchableOpacity style={styles.sideMenuItem} onPress={() => handleNavigation('PostItem')}>
+          <Ionicons name="add-circle-outline" size={22} color="#3578c6" />
+          <Text style={styles.sideMenuText}>Post New Item</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.sideMenuItem} onPress={() => handleNavigation('ReportFound')}>
+          <Ionicons name="checkmark-circle-outline" size={22} color="#3578c6" />
+          <Text style={styles.sideMenuText}>Report Found</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.sideMenuItem} onPress={() => handleNavigation('Chat')}>
+          <Ionicons name="chatbubble-ellipses-outline" size={22} color="#3578c6" />
+          <Text style={styles.sideMenuText}>Chat</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.sideMenuItem} onPress={() => handleNavigation('MyPostedItems')}>
+          <Ionicons name="document-text-outline" size={22} color="#3578c6" />
+          <Text style={styles.sideMenuText}>My Posted Items</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.sideMenuItem} onPress={() => handleNavigation('MyProfile')}>
+          <Ionicons name="person-outline" size={22} color="#3578c6" />
+          <Text style={styles.sideMenuText}>My Profile</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.sideMenuItem} onPress={() => handleNavigation('Notifications')}>
+          <Ionicons name="notifications-outline" size={22} color="#3578c6" />
+          <Text style={styles.sideMenuText}>Notifications</Text>
+        </TouchableOpacity>
+      </Animated.View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  title: { fontSize: 26, fontWeight: 'bold', marginBottom: 15, color: '#1b3358' },
+  topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#3578c6', paddingVertical: 12, paddingHorizontal: 15 },
+  menuButton: { marginRight: 15 },
+  topTitle: { fontSize: 20, color: '#fff', fontWeight: 'bold' },
+
   category: { alignItems: 'center', marginRight: 15 },
   categoryImage: { width: 60, height: 60, borderRadius: 30, marginBottom: 5 },
   categoryText: { fontSize: 12, fontWeight: '600' },
-  searchContainer: { marginVertical: 10 },
+
   input: { 
     borderWidth: 1, 
     borderColor: '#dae8f9', 
     borderRadius: 8, 
     padding: 10, 
-    marginBottom: 8,
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    marginBottom: 8
   },
   gradientButton: { 
     padding: 12,
@@ -521,6 +512,7 @@ const styles = StyleSheet.create({
     elevation: 3
   },
   buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+
   itemCard: { 
     backgroundColor: '#fff',
     borderRadius: 14,
@@ -537,15 +529,27 @@ const styles = StyleSheet.create({
     borderLeftColor: '#e53935',
     backgroundColor: '#ffe6e6'
   },
-  emergencyLabel: {
-    color: '#d32f2f',
-    fontWeight: 'bold',
-    marginBottom: 5,
-    fontSize: 15
-  },
+  emergencyLabel: { color: '#d32f2f', fontWeight: 'bold', marginBottom: 5, fontSize: 15 },
   itemRow: { flexDirection: 'row', alignItems: 'center' },
   itemImage: { width: 110, height: 110, borderRadius: 12, marginRight: 12 },
   itemDetails: { flex: 1 },
   itemTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 5 },
   itemText: { fontSize: 14, color: '#555', marginBottom: 2 },
+
+  sideMenu: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: SCREEN_WIDTH * 0.6,
+    backgroundColor: '#fff',
+    paddingTop: 60,
+    paddingHorizontal: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 3, height: 0 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 6,
+  },
+  sideMenuItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12 },
+  sideMenuText: { fontSize: 16, fontWeight: '600', marginLeft: 10, color: '#3578c6' },
 });
