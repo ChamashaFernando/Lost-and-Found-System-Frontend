@@ -1,0 +1,24 @@
+{
+    "home": "මුල් පිටුව",
+    "Wallet": "මුදල් පසුම්බිය",
+    "Watch": "ඔරලෝසුව",
+    "Cap": "තොප්පිය",
+    "Umbrella": "කුඩය",
+    "Bag": "බෑගය",
+    "Colombo": "කොළඹ",
+    "LOST": "අහිමි",
+    "lostFoundItems": "අහිමි සහ සොයාගත් අයිතම",
+    "search": "සෙවීම",
+    "category": "ප්‍රවර්ගය",
+    "location": "ස්ථානය",
+    "status": "තත්වය",
+    "postNewItem": "නව අයිතමක් තබන්න",
+    "myReports": "මගේ වාර්තා",
+    "reportFound": "හමුවූ අයිතම වාර්තා කරන්න",
+    "emergency": "⚠️ හදිසි",
+    "loginAgain": "කරුණාකර නැවත ලොගින් වන්න.",
+    "sessionExpired": "සැසිය කල් ඉකුත් විය",
+    "searchFailed": "සෙවීම අසාර්ථක විය",
+    "loadFailed": "අයිතම පූරණය කිරීමට අසමත් විය"
+  }
+  

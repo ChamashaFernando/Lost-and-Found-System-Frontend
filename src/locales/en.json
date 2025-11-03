@@ -1,0 +1,24 @@
+{
+    "home": "Home",
+    "Wallet": "Wallet",
+    "Watch": "Watch",
+    "Cap": "Cap",
+    "Umbrella": "Umbrella",
+    "Bag": "Bag",
+    "Colombo": "Colombo",
+    "LOST": "LOST",
+    "lostFoundItems": "Lost & Found Items",
+    "search": "Search",
+    "category": "Category",
+    "location": "Location",
+    "status": "Status",
+    "postNewItem": "Post New Item",
+    "myReports": "My Reports",
+    "reportFound": "Report Found",
+    "emergency": "⚠️ Emergency",
+    "loginAgain": "Please login again.",
+    "sessionExpired": "Session expired",
+    "searchFailed": "Search failed",
+    "loadFailed": "Failed to load items"
+  }
+  

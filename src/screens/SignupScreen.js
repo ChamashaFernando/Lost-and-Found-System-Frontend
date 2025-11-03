@@ -296,7 +296,7 @@ export default function SignupScreen({ navigation }) {
           />
         </TouchableOpacity>
       </View>
-
+{/* 
       <Text style={styles.label}>Language</Text>
       <View style={styles.pickerContainer}>
         <Picker
@@ -307,7 +307,7 @@ export default function SignupScreen({ navigation }) {
           <Picker.Item label="Tamil" value="TAMIL" />
           <Picker.Item label="English" value="ENGLISH" />
         </Picker>
-      </View>
+      </View> */}
 
       <TouchableOpacity style={styles.button} onPress={handleSignup} disabled={loading}>
         <Text style={styles.buttonText}>{loading ? 'Signing Up...' : 'Signup'}</Text>

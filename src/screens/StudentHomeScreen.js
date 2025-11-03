@@ -1,3 +1,6 @@
+
+
+
 // import React, { useEffect, useState, useCallback } from 'react';
 // import { 
 //   View, Text, FlatList, TouchableOpacity, Image, StyleSheet, Alert, Animated, Dimensions, TextInput 
@@ -26,7 +29,7 @@
 //   const [items, setItems] = useState([]);
 //   const [category, setCategory] = useState('');
 //   const [menuOpen, setMenuOpen] = useState(false);
-//   const slideAnim = useState(new Animated.Value(-SCREEN_WIDTH * 0.6))[0]; // hidden initially
+//   const slideAnim = useState(new Animated.Value(-SCREEN_WIDTH * 0.6))[0];
 
 //   const fetchAllItems = useCallback(async () => {
 //     try {
@@ -98,7 +101,6 @@
 
 //   const renderHeader = () => (
 //     <View>
-//       {/* Categories horizontal list */}
 //       <FlatList
 //         data={categories}
 //         horizontal
@@ -112,8 +114,6 @@
 //         showsHorizontalScrollIndicator={false}
 //         contentContainerStyle={{ paddingHorizontal: 10, paddingVertical: 10 }}
 //       />
-
-//       {/* Search Input - only category */}
 //       <View style={{ paddingHorizontal: 10, marginBottom: 10 }}>
 //         <TextInput
 //           placeholder="Category"
@@ -132,14 +132,19 @@
 
 //   return (
 //     <View style={{ flex: 1, backgroundColor: '#f5f9ff' }}>
-      
-//       {/* Top bar with menu icon */}
+
+//       {/* Top bar */}
 //       <View style={styles.topBar}>
-//         <TouchableOpacity onPress={toggleMenu} style={styles.menuButton}>
-//           <Ionicons name={menuOpen ? "close" : "menu"} size={28} color="#fff" />
-//         </TouchableOpacity>
 //         <Text style={styles.topTitle}>Lost & Found Items</Text>
 //       </View>
+
+//       {/* Arrow / Menu Button on top of everything */}
+//       <TouchableOpacity 
+//         onPress={toggleMenu} 
+//         style={[styles.menuButton, { zIndex: 20, position: 'absolute', left: 15, top: 12 }]}
+//       >
+//         <Ionicons name={menuOpen ? "arrow-back-outline" : "menu"} size={28} color="#fff" />
+//       </TouchableOpacity>
 
 //       {/* Items list */}
 //       <FlatList
@@ -169,7 +174,7 @@
 //       />
 
 //       {/* Side menu */}
-//       <Animated.View style={[styles.sideMenu, { left: slideAnim }]}>
+//       <Animated.View style={[styles.sideMenu, { left: slideAnim, zIndex: 10 }]}>
 //         <TouchableOpacity style={styles.sideMenuItem} onPress={() => handleNavigation('PostItem')}>
 //           <Ionicons name="add-circle-outline" size={22} color="#3578c6" />
 //           <Text style={styles.sideMenuText}>Post New Item</Text>
@@ -195,13 +200,12 @@
 //           <Text style={styles.sideMenuText}>Notifications</Text>
 //         </TouchableOpacity>
 //       </Animated.View>
-
 //     </View>
 //   );
 // }
 
 // const styles = StyleSheet.create({
-//   topBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#3578c6', paddingVertical: 12, paddingHorizontal: 15 },
+//   topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#3578c6', paddingVertical: 12, paddingHorizontal: 15 },
 //   menuButton: { marginRight: 15 },
 //   topTitle: { fontSize: 20, color: '#fff', fontWeight: 'bold' },
 
@@ -266,13 +270,10 @@
 //     shadowOpacity: 0.2,
 //     shadowRadius: 4,
 //     elevation: 6,
-//     zIndex: 10,
 //   },
 //   sideMenuItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12 },
 //   sideMenuText: { fontSize: 16, fontWeight: '600', marginLeft: 10, color: '#3578c6' },
 // });
-
-
 
 
 
@@ -310,12 +311,14 @@ export default function StudentHomeScreen({ navigation, route }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const slideAnim = useState(new Animated.Value(-SCREEN_WIDTH * 0.6))[0];
 
+  // Fetch all items from backend
   const fetchAllItems = useCallback(async () => {
     try {
       const response = await axios.get('http://172.20.10.3:8096/api/items', {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      // Sort emergency items on top
       const sortedItems = response.data.sort((a, b) => {
         if (a.emergency && !b.emergency) return -1;
         if (!a.emergency && b.emergency) return 1;
@@ -325,7 +328,9 @@ export default function StudentHomeScreen({ navigation, route }) {
       setItems(sortedItems);
     } catch (err) {
       console.error('Fetch items error:', err);
-      Alert.alert("Error", "Failed to load items.");
+      if (err.response) console.error('Backend response:', err.response.data);
+      if (err.request) console.error('No response received:', err.request);
+      Alert.alert("Error", "Failed to load items. Check console for details.");
     }
   }, [token]);
 
@@ -374,7 +379,9 @@ export default function StudentHomeScreen({ navigation, route }) {
       setItems(sortedSearchResults);
     } catch (err) {
       console.error('Search error:', err);
-      Alert.alert("Error", "Search failed.");
+      if (err.response) console.error('Backend response:', err.response.data);
+      if (err.request) console.error('No response received:', err.request);
+      Alert.alert("Error", "Search failed. Check console for details.");
     }
   };
 
@@ -411,13 +418,12 @@ export default function StudentHomeScreen({ navigation, route }) {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f5f9ff' }}>
-
       {/* Top bar */}
       <View style={styles.topBar}>
         <Text style={styles.topTitle}>Lost & Found Items</Text>
       </View>
 
-      {/* Arrow / Menu Button on top of everything */}
+      {/* Menu Button */}
       <TouchableOpacity 
         onPress={toggleMenu} 
         style={[styles.menuButton, { zIndex: 20, position: 'absolute', left: 15, top: 12 }]}
@@ -431,7 +437,7 @@ export default function StudentHomeScreen({ navigation, route }) {
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity
-            onPress={() => navigation.navigate('StudentItemDetails', { item, user, token })}
+            onPress={() => handleNavigation('StudentItemDetails', { item })}
             style={[styles.itemCard, item.emergency && styles.emergencyCard]}
           >
             {item.emergency && <Text style={styles.emergencyLabel}>⚠️ Emergency </Text>}
