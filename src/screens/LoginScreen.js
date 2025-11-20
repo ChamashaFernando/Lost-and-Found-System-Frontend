@@ -1,11 +1,18 @@
 
 
 
-// import React, { useState } from 'react';
+// import React, { useState, useEffect } from 'react';
 // import { 
-//   View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator 
+//   View, 
+//   Text, 
+//   TextInput, 
+//   TouchableOpacity, 
+//   StyleSheet, 
+//   Alert, 
+//   ActivityIndicator 
 // } from 'react-native';
 // import axios from 'axios';
+// import messaging from '@react-native-firebase/messaging';
 // import useCurrentLocation from '../hooks/useCurrentLocation';
 
 // export default function LoginScreen({ navigation }) {
@@ -14,6 +21,21 @@
 //   const [loading, setLoading] = useState(false);
 
 //   const location = useCurrentLocation(); // { latitude, longitude }
+
+//   useEffect(() => {
+//     // 🔹 Request notification permission on app start
+//     const requestPermission = async () => {
+//       const authStatus = await messaging().requestPermission();
+//       if (authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+//           authStatus === messaging.AuthorizationStatus.PROVISIONAL) {
+//         console.log('✅ Notification permission granted.');
+//       } else {
+//         console.log('❌ Notification permission denied.');
+//       }
+//     };
+
+//     requestPermission();
+//   }, []);
 
 //   const handleLogin = async () => {
 //     if (!email || !password) {
@@ -29,6 +51,7 @@
 //     setLoading(true);
 
 //     try {
+//       // 🔹 Login request
 //       const response = await axios.post('http://172.20.10.3:8096/api/users/login', {
 //         email,
 //         password,
@@ -52,10 +75,36 @@
 //         return;
 //       }
 
-//       Alert.alert('Login Successful', `Welcome ${user.fullName}`);
-//       navigation.navigate('Home', { user, token }); // ✅ Pass user and token
+//       console.log('✅ Login success:', user);
+
+//       // 🔹 Get FCM token and save to backend
+//       const fcmToken = await messaging().getToken();
+//       if (fcmToken) {
+//         try {
+//           await axios.post(
+//             `http://172.20.10.3:8096/api/users/${user.id}/token`,
+//             { fcmToken },
+//             { headers: { Authorization: `Bearer ${token}` } }
+//           );
+//           console.log('✅ FCM token saved successfully');
+//         } catch (err) {
+//           console.warn('⚠️ Failed to save FCM token:', err.response?.data || err.message);
+//         }
+//       }
+
+//       // ✅ Role-based navigation
+//       if (user.role === 'ADMIN') {
+//         Alert.alert('Login Successful', `Welcome Admin ${user.fullName}`);
+//         navigation.replace('Home', { user, token });
+//       } else if (user.role === 'STUDENT') {
+//         Alert.alert('Login Successful', `Welcome ${user.fullName}`);
+//         navigation.replace('StudentHome', { user, token });
+//       } else {
+//         Alert.alert('Access Denied', 'Your role is not authorized.');
+//       }
+
 //     } catch (error) {
-//       console.log('Login error:', error.response?.data || error.message);
+//       console.log('❌ Login error:', error.response?.data || error.message);
 //       Alert.alert(
 //         'Login Failed',
 //         error.response?.data?.message || 'Invalid credentials'
@@ -87,8 +136,16 @@
 //         style={styles.input}
 //       />
 
-//       <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-//         {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Login</Text>}
+//       <TouchableOpacity 
+//         style={styles.button} 
+//         onPress={handleLogin} 
+//         disabled={loading}
+//       >
+//         {loading ? (
+//           <ActivityIndicator color="#fff" />
+//         ) : (
+//           <Text style={styles.buttonText}>Login</Text>
+//         )}
 //       </TouchableOpacity>
 
 //       <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
@@ -99,36 +156,96 @@
 // }
 
 // const styles = StyleSheet.create({
-//   container: { flex: 1, justifyContent: 'center', padding: 20, backgroundColor: '#f9f9f9' },
-//   title: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginBottom: 30, color: '#333' },
-//   label: { fontSize: 16, marginBottom: 5, color: '#444', fontWeight: '500' },
-//   input: { width: '100%', height: 45, borderWidth: 1, borderColor: '#ccc', marginBottom: 15, paddingHorizontal: 10, borderRadius: 8, backgroundColor: '#fff' },
-//   button: { backgroundColor: '#4a90e2', paddingVertical: 12, borderRadius: 8, marginTop: 10, marginBottom: 15 },
-//   buttonText: { color: '#fff', textAlign: 'center', fontSize: 16, fontWeight: 'bold' },
-//   link: { color: '#4a90e2', textAlign: 'center', fontSize: 14, marginTop: 5 }
+//   container: { 
+//     flex: 1, 
+//     justifyContent: 'center', 
+//     padding: 20, 
+//     backgroundColor: '#f9f9f9' 
+//   },
+//   title: { 
+//     fontSize: 28, 
+//     fontWeight: 'bold', 
+//     textAlign: 'center', 
+//     marginBottom: 30, 
+//     color: '#333' 
+//   },
+//   label: { 
+//     fontSize: 16, 
+//     marginBottom: 5, 
+//     color: '#444', 
+//     fontWeight: '500' 
+//   },
+//   input: { 
+//     width: '100%', 
+//     height: 45, 
+//     borderWidth: 1, 
+//     borderColor: '#ccc', 
+//     marginBottom: 15, 
+//     paddingHorizontal: 10, 
+//     borderRadius: 8, 
+//     backgroundColor: '#fff' 
+//   },
+//   button: { 
+//     backgroundColor: '#4a90e2', 
+//     paddingVertical: 12, 
+//     borderRadius: 8, 
+//     marginTop: 10, 
+//     marginBottom: 15 
+//   },
+//   buttonText: { 
+//     color: '#fff', 
+//     textAlign: 'center', 
+//     fontSize: 16, 
+//     fontWeight: 'bold' 
+//   },
+//   link: { 
+//     color: '#4a90e2', 
+//     textAlign: 'center', 
+//     fontSize: 14, 
+//     marginTop: 5 
+//   },
 // });
 
 
-
-import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
-  Alert, 
-  ActivityIndicator 
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import axios from 'axios';
+import messaging from '@react-native-firebase/messaging';
 import useCurrentLocation from '../hooks/useCurrentLocation';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; // ✅ Make sure you have this installed
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // 🔹 Toggle state
 
   const location = useCurrentLocation(); // { latitude, longitude }
+
+  useEffect(() => {
+    // 🔹 Request notification permission on app start
+    const requestPermission = async () => {
+      const authStatus = await messaging().requestPermission();
+      if (
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL
+      ) {
+        console.log('✅ Notification permission granted.');
+      } else {
+        console.log('❌ Notification permission denied.');
+      }
+    };
+
+    requestPermission();
+  }, []);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -137,19 +254,26 @@ export default function LoginScreen({ navigation }) {
     }
 
     if (!location.latitude || !location.longitude) {
-      Alert.alert('Location Error', 'Unable to get your current location. Please try again.');
+      Alert.alert(
+        'Location Error',
+        'Unable to get your current location. Please try again.'
+      );
       return;
     }
 
     setLoading(true);
 
     try {
-      const response = await axios.post('http://172.20.10.3:8096/api/users/login', {
-        email,
-        password,
-        latitude: location.latitude,
-        longitude: location.longitude,
-      });
+      // 🔹 Login request
+      const response = await axios.post(
+        'http://172.20.10.3:8096/api/users/login',
+        {
+          email,
+          password,
+          latitude: location.latitude,
+          longitude: location.longitude,
+        }
+      );
 
       const token = response.data.token;
       const user = {
@@ -169,6 +293,24 @@ export default function LoginScreen({ navigation }) {
 
       console.log('✅ Login success:', user);
 
+      // 🔹 Get FCM token and save to backend
+      const fcmToken = await messaging().getToken();
+      if (fcmToken) {
+        try {
+          await axios.post(
+            `http://172.20.10.3:8096/api/users/${user.id}/token`,
+            { fcmToken },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          console.log('✅ FCM token saved successfully');
+        } catch (err) {
+          console.warn(
+            '⚠️ Failed to save FCM token:',
+            err.response?.data || err.message
+          );
+        }
+      }
+
       // ✅ Role-based navigation
       if (user.role === 'ADMIN') {
         Alert.alert('Login Successful', `Welcome Admin ${user.fullName}`);
@@ -179,7 +321,6 @@ export default function LoginScreen({ navigation }) {
       } else {
         Alert.alert('Access Denied', 'Your role is not authorized.');
       }
-
     } catch (error) {
       console.log('❌ Login error:', error.response?.data || error.message);
       Alert.alert(
@@ -205,24 +346,32 @@ export default function LoginScreen({ navigation }) {
       />
 
       <Text style={styles.label}>Password</Text>
-      <TextInput
-        placeholder="Enter your password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
-      />
+      <View style={styles.passwordContainer}>
+        <TextInput
+          placeholder="Enter your password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!showPassword} // 🔹 Toggle secure entry
+          style={styles.passwordInput}
+        />
+        <TouchableOpacity
+          onPress={() => setShowPassword(prev => !prev)}
+          style={styles.eyeButton}
+        >
+          <Icon
+            name={showPassword ? 'eye-off' : 'eye'}
+            size={24}
+            color="#888"
+          />
+        </TouchableOpacity>
+      </View>
 
-      <TouchableOpacity 
-        style={styles.button} 
-        onPress={handleLogin} 
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleLogin}
         disabled={loading}
       >
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Login</Text>
-        )}
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Login</Text>}
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
@@ -233,52 +382,69 @@ export default function LoginScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    justifyContent: 'center', 
-    padding: 20, 
-    backgroundColor: '#f9f9f9' 
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: '#f9f9f9',
   },
-  title: { 
-    fontSize: 28, 
-    fontWeight: 'bold', 
-    textAlign: 'center', 
-    marginBottom: 30, 
-    color: '#333' 
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 30,
+    color: '#333',
   },
-  label: { 
-    fontSize: 16, 
-    marginBottom: 5, 
-    color: '#444', 
-    fontWeight: '500' 
+  label: {
+    fontSize: 16,
+    marginBottom: 5,
+    color: '#444',
+    fontWeight: '500',
   },
-  input: { 
-    width: '100%', 
-    height: 45, 
-    borderWidth: 1, 
-    borderColor: '#ccc', 
-    marginBottom: 15, 
-    paddingHorizontal: 10, 
-    borderRadius: 8, 
-    backgroundColor: '#fff' 
+  input: {
+    width: '100%',
+    height: 45,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    marginBottom: 15,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    backgroundColor: '#fff',
   },
-  button: { 
-    backgroundColor: '#4a90e2', 
-    paddingVertical: 12, 
-    borderRadius: 8, 
-    marginTop: 10, 
-    marginBottom: 15 
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    marginBottom: 15,
   },
-  buttonText: { 
-    color: '#fff', 
-    textAlign: 'center', 
-    fontSize: 16, 
-    fontWeight: 'bold' 
+  passwordInput: {
+    flex: 1,
+    height: 45,
+    paddingHorizontal: 10,
   },
-  link: { 
-    color: '#4a90e2', 
-    textAlign: 'center', 
-    fontSize: 14, 
-    marginTop: 5 
+  eyeButton: {
+    paddingHorizontal: 10,
+  },
+  button: {
+    backgroundColor: '#4a90e2',
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 10,
+    marginBottom: 15,
+  },
+  buttonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  link: {
+    color: '#4a90e2',
+    textAlign: 'center',
+    fontSize: 14,
+    marginTop: 5,
   },
 });
